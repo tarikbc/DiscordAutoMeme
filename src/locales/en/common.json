@@ -61,6 +61,9 @@
   "stopped": "Service stopped.",
   "testMode": {
     "wouldHaveSent": "[TEST MODE] Would have sent {{count}} memes to {{username}} about {{gameName}}.",
+    "wouldHaveSentForArtist": "[TEST MODE] Would have sent {{count}} memes to {{username}} about artist {{artistName}}.",
     "memeUrls": "[TEST MODE] Meme URLs: {{urls}}..."
-  }
+  },
+  "unknownSong": "a song",
+  "unknownPlayer": "a music player"
 }

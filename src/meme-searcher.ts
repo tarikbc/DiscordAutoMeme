@@ -16,7 +16,7 @@ export class MemeSearcher {
 
   public async searchMemes(
     gameName: string,
-    count: number = 5
+    count: number = 5,
   ): Promise<Meme[]> {
     try {
       const searchQuery = t("memes:search.terms.query", { gameName });
@@ -61,7 +61,7 @@ export class MemeSearcher {
 
             // Log when memes are found
             logger.info(
-              t("memes:search.memesFound", { count: memes.length, gameName })
+              t("memes:search.memesFound", { count: memes.length, gameName }),
             );
 
             resolve(memes);

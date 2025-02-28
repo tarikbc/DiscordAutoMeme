@@ -13,6 +13,26 @@ export interface FriendWithGame {
   lastSentMemeTimestamp?: number;
 }
 
+// Music activity interface
+export interface MusicActivity {
+  userId: string;
+  username: string;
+  artistName: string;
+  songName?: string;
+  albumName?: string;
+  playerName?: string;
+}
+
+// Friend with music activity
+export interface FriendWithMusic {
+  id: string;
+  username: string;
+  artistName: string;
+  songName?: string;
+  albumName?: string;
+  playerName?: string;
+}
+
 // Meme interface
 export interface Meme {
   url: string;

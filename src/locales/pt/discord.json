@@ -6,8 +6,12 @@
   "friends": {
     "isPlaying": "Amigo {{username}} está jogando {{gameName}}.",
     "stoppedPlaying": "Amigo {{username}} parou de jogar {{gameName}}.",
+    "isListening": "Amigo {{username}} está ouvindo {{songName}} de {{artistName}} no {{playerName}}.",
+    "stoppedListening": "Amigo {{username}} parou de ouvir {{artistName}}.",
     "foundCount": "Encontrados {{count}} amigos jogando atualmente.",
+    "foundListeningCount": "Encontrados {{count}} amigos ouvindo música atualmente.",
     "notPlaying": "Usuário alvo {{userId}} não está jogando nenhum jogo.",
+    "notPlayingOrListening": "Usuário alvo {{userId}} não está jogando nenhum jogo ou ouvindo música.",
     "skippingCooldown": "Ignorando {{username}} devido ao período de espera recente.",
     "clientNotReady": "Cliente do Discord ainda não está pronto.",
     "retryIn": "Tentando novamente em {{seconds}} segundos. Cliente do Discord ainda está carregando.",
@@ -17,11 +21,14 @@
     "targetUsersUpdated": "Agora monitorando {{count}} usuários: {{userIds}}. Foco específico ativado.",
     "targetUserAdded": "Adicionado usuário {{userId}} à lista de alvos. Agora monitorando {{count}} usuários.",
     "targetUserRemoved": "Removido usuário {{userId}} da lista de alvos. Agora monitorando {{count}} usuários.",
-    "immediateResponse": "Respondendo imediatamente ao {{username}} jogando {{gameName}}."
+    "immediateResponse": "Respondendo imediatamente ao {{username}} jogando {{gameName}}.",
+    "immediateResponseMusic": "Respondendo imediatamente ao {{username}} ouvindo {{songName}} de {{artistName}} no {{playerName}}."
   },
   "directMessage": {
     "greeting": "AEEEEEE {{username}}!!! VI QUE TU TÁ JOGANDO {{gameName}}!!! OLHA ESSES MEMES AQUI KKKKKK!!! 🤣🤣🤣",
     "closing": "APROVEITA O JOGO SEU NOOB!!! HAHAHAHAHA!!! 🤪🎮💯",
+    "greetingMusic": "AEEEEEE {{username}}!!! VI QUE TU TÁ OUVINDO {{songName}} DE {{artistName}} NO {{playerName}}!!! OLHA ESSES MEMES AQUI KKKKKK!!! 🤣🤣🤣",
+    "closingMusic": "APROVEITA A MÚSICA SEU NOOB!!! HAHAHAHAHA!!! 🤪🎵💯",
     "failed": "Falha ao enviar mensagem direta para {{userId}}."
   }
 }

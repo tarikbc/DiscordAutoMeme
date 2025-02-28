@@ -28,7 +28,7 @@ const rl = readline.createInterface({
 
 // Function to prompt user for language selection
 const promptForLanguage = async (
-  availableLanguages: string[]
+  availableLanguages: string[],
 ): Promise<string> => {
   return new Promise((resolve) => {
     const defaultLanguage = process.env.LANGUAGE || "en";
@@ -54,7 +54,7 @@ const promptForLanguage = async (
           // Otherwise use default language
           resolve(defaultLanguage);
         }
-      }
+      },
     );
   });
 };
@@ -76,18 +76,18 @@ const bootstrap = async () => {
   console.log(
     `\n=== ${t("common:config.languageSelected", {
       language: selectedLanguage,
-    })} ===\n`
+    })} ===\n`,
   );
 
   // Check for required environment variables
   const requiredEnvVars = ["DISCORD_TOKEN", "SERPAPI_API_KEY"];
   const missingEnvVars = requiredEnvVars.filter(
-    (envVar) => !process.env[envVar]
+    (envVar) => !process.env[envVar],
   );
 
   if (missingEnvVars.length > 0) {
     logger.error(
-      t("config.missingEnvVars", { variables: missingEnvVars.join(", ") })
+      t("config.missingEnvVars", { variables: missingEnvVars.join(", ") }),
     );
     logger.error(t("config.createEnvFile"));
     process.exit(1);
@@ -99,7 +99,7 @@ const bootstrap = async () => {
   const memeCount = parseInt(process.env.MEME_COUNT || "5", 10);
   const checkIntervalMinutes = parseInt(
     process.env.CHECK_INTERVAL_MINUTES || "15",
-    10
+    10,
   );
   const sendMemes = process.env.SEND_MEMES?.toLowerCase() === "true";
 
@@ -116,7 +116,7 @@ const bootstrap = async () => {
   // Create service instances
   const discordClient = new DiscordClient(
     discordToken,
-    targetUserIds.length > 0 ? targetUserIds : undefined
+    targetUserIds.length > 0 ? targetUserIds : undefined,
   );
   const memeSearcher = new MemeSearcher(serpApiKey);
   const memeService = new MemeService(
@@ -125,7 +125,7 @@ const bootstrap = async () => {
     memeCount,
     checkIntervalMinutes,
     sendMemes,
-    targetUserIds.length > 0 ? targetUserIds : undefined
+    targetUserIds.length > 0 ? targetUserIds : undefined,
   );
 
   // Handle graceful shutdown
@@ -152,10 +152,10 @@ const bootstrap = async () => {
     t("config.memeCountConfig", {
       count: memeCount,
       minutes: checkIntervalMinutes,
-    })
+    }),
   );
   logger.info(
-    sendMemes ? t("config.memeSendingEnabled") : t("config.memeSendingDisabled")
+    sendMemes ? t("config.memeSendingEnabled") : t("config.memeSendingDisabled"),
   );
 
   if (targetUserIds.length > 0) {
@@ -163,7 +163,7 @@ const bootstrap = async () => {
       t("config.targetingSpecificUsers", {
         count: targetUserIds.length,
         userIds: targetUserIds.join(", "),
-      })
+      }),
     );
   } else {
     logger.info(t("config.targetingAllFriends"));

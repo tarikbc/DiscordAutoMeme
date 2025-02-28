@@ -1,5 +1,5 @@
 import { Client, ClientOptions, Presence } from "discord.js-selfbot-v13";
-import { GameActivity, FriendWithGame } from "./types";
+import { GameActivity, FriendWithGame, FriendWithMusic } from "./types";
 import { logger } from "./utils/logger";
 import { t } from "./i18n";
 import { EventEmitter } from "events";
@@ -8,6 +8,7 @@ export class DiscordClient extends EventEmitter {
   private client: Client;
   private ready: boolean = false;
   private friendsPlaying: Map<string, FriendWithGame> = new Map();
+  private friendsListening: Map<string, FriendWithMusic> = new Map();
   private statusCheckInterval?: NodeJS.Timeout;
   private targetUserIds: Set<string> = new Set();
 
@@ -37,7 +38,7 @@ export class DiscordClient extends EventEmitter {
     this.client.on("ready", () => {
       this.ready = true;
       logger.info(
-        t("discord:login.success", { username: this.client.user?.username })
+        t("discord:login.success", { username: this.client.user?.username }),
       );
 
       // Initial check of friends after login
@@ -46,7 +47,7 @@ export class DiscordClient extends EventEmitter {
       // Set up periodic status checks every 30 seconds
       this.statusCheckInterval = setInterval(
         () => this.checkFriendsStatus(),
-        30000
+        30000,
       );
     });
 
@@ -64,7 +65,7 @@ export class DiscordClient extends EventEmitter {
         }
 
         this.handlePresenceUpdate(newPresence);
-      }
+      },
     );
 
     this.client.login(token).catch((err) => {
@@ -87,8 +88,8 @@ export class DiscordClient extends EventEmitter {
         {
           count: this.targetUserIds.size,
           userIds: Array.from(this.targetUserIds).join(", ") || "none",
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -98,7 +99,7 @@ export class DiscordClient extends EventEmitter {
       t("discord:friends.targetUserAdded", {
         userId,
         count: this.targetUserIds.size,
-      })
+      }),
     );
   }
 
@@ -109,7 +110,7 @@ export class DiscordClient extends EventEmitter {
         t("discord:friends.targetUserRemoved", {
           userId,
           count: this.targetUserIds.size,
-        })
+        }),
       );
     }
   }
@@ -128,7 +129,7 @@ export class DiscordClient extends EventEmitter {
         logger.debug(
           t("common:debug.checkingTargetUsers", {
             count: this.targetUserIds.size,
-          })
+          }),
         );
         for (const userId of this.targetUserIds) {
           await this.checkSpecificUserStatus(userId);
@@ -145,7 +146,7 @@ export class DiscordClient extends EventEmitter {
       const friendIds = friendsMap ? Array.from(friendsMap.keys()) : [];
 
       logger.debug(
-        t("common:debug.friendCacheCount", { count: friendIds.length })
+        t("common:debug.friendCacheCount", { count: friendIds.length }),
       );
 
       // Process each friend by ID
@@ -154,7 +155,7 @@ export class DiscordClient extends EventEmitter {
           await this.checkSpecificUserStatus(friendId);
         } catch (error) {
           logger.error(
-            t("common:errors.processingFriendError", { friendId, error })
+            t("common:errors.processingFriendError", { friendId, error }),
           );
         }
       }
@@ -176,7 +177,7 @@ export class DiscordClient extends EventEmitter {
           t("common:debug.notAFriendSkipping", {
             username: user.username,
             userId,
-          })
+          }),
         );
         return;
       }
@@ -185,16 +186,16 @@ export class DiscordClient extends EventEmitter {
         t("common:debug.checkingUserStatus", {
           username: user.username,
           userId,
-        })
+        }),
       );
 
       // First try to get presence from the user object
       // @ts-ignore - presence exists in discord.js-selfbot-v13 but TypeScript doesn't know
-      let presence = user.presence;
+      const presence = user.presence;
 
       if (presence) {
         logger.debug(
-          t("common:debug.hasPresenceData", { username: user.username })
+          t("common:debug.hasPresenceData", { username: user.username }),
         );
         this.handlePresenceUpdate(presence);
         return;
@@ -202,21 +203,21 @@ export class DiscordClient extends EventEmitter {
 
       // If no presence, try to find the user in shared guilds
       logger.debug(
-        t("common:debug.checkingSharedGuilds", { username: user.username })
+        t("common:debug.checkingSharedGuilds", { username: user.username }),
       );
 
       // Find shared guilds with this user
       // @ts-ignore
       const sharedGuilds = this.client.guilds.cache.filter(
         (guild) =>
-          guild.members.cache.has(userId) || guild.presences.cache.has(userId)
+          guild.members.cache.has(userId) || guild.presences.cache.has(userId),
       );
 
       logger.debug(
         t("common:debug.foundSharedGuilds", {
           count: sharedGuilds.size,
           username: user.username,
-        })
+        }),
       );
 
       for (const [guildId, guild] of sharedGuilds) {
@@ -228,7 +229,7 @@ export class DiscordClient extends EventEmitter {
               username: user.username,
               guildName: guild.name,
               cacheType: "members cache",
-            })
+            }),
           );
           // @ts-ignore
           this.handlePresenceUpdate(member.presence);
@@ -243,7 +244,7 @@ export class DiscordClient extends EventEmitter {
               username: user.username,
               guildName: guild.name,
               cacheType: "presences cache",
-            })
+            }),
           );
           this.handlePresenceUpdate(guildPresence);
           return;
@@ -258,7 +259,7 @@ export class DiscordClient extends EventEmitter {
             t("common:debug.fetchingMember", {
               username: user.username,
               guildName: guild.name,
-            })
+            }),
           );
           const member = await guild.members.fetch(userId);
           if (member && member.presence) {
@@ -266,7 +267,7 @@ export class DiscordClient extends EventEmitter {
               t("common:debug.fetchedPresence", {
                 username: user.username,
                 guildName: guild.name,
-              })
+              }),
             );
             // @ts-ignore
             this.handlePresenceUpdate(member.presence);
@@ -277,7 +278,7 @@ export class DiscordClient extends EventEmitter {
             t("common:debug.failedFetchMember", {
               username: user.username,
               guildName: guild.name,
-            })
+            }),
           );
         }
       }
@@ -286,7 +287,7 @@ export class DiscordClient extends EventEmitter {
         t("common:debug.noPresenceData", {
           username: user.username,
           userId,
-        })
+        }),
       );
     } catch (error) {
       logger.error(t("common:errors.checkingStatusError", { userId, error }));
@@ -307,7 +308,7 @@ export class DiscordClient extends EventEmitter {
 
     if (!this.isFriend(userId) && this.targetUserIds.size === 0) {
       logger.debug(
-        t("common:debug.notAFriend", { username: presence.user.username })
+        t("common:debug.notAFriend", { username: presence.user.username }),
       );
       return;
     }
@@ -316,7 +317,7 @@ export class DiscordClient extends EventEmitter {
 
     if (!activities || activities.length === 0) {
       logger.debug(
-        t("common:debug.noActivities", { username: presence.user.username })
+        t("common:debug.noActivities", { username: presence.user.username }),
       );
 
       // Remove from playing if they stopped
@@ -326,9 +327,21 @@ export class DiscordClient extends EventEmitter {
           t("discord:friends.stoppedPlaying", {
             username: friend?.username,
             gameName: friend?.gameName,
-          })
+          }),
         );
         this.friendsPlaying.delete(userId);
+      }
+
+      // Remove from listening if they stopped
+      if (this.friendsListening.has(userId)) {
+        const friend = this.friendsListening.get(userId);
+        logger.info(
+          t("discord:friends.stoppedListening", {
+            username: friend?.username,
+            artistName: friend?.artistName,
+          }),
+        );
+        this.friendsListening.delete(userId);
       }
 
       return;
@@ -339,15 +352,20 @@ export class DiscordClient extends EventEmitter {
         username: presence.user.username,
         count: activities.length,
         activities: activities.map((a) => `${a.type}: ${a.name}`).join(", "),
-      })
+      }),
     );
 
     const gameActivity = activities.find(
-      (activity) => activity.type === "PLAYING"
+      (activity) => activity.type === "PLAYING",
     );
 
+    const musicActivity = activities.find(
+      (activity) => activity.type === "LISTENING",
+    );
+
+    const username = presence.user.username;
+
     if (gameActivity) {
-      const username = presence.user.username;
       const gameName = gameActivity.name;
 
       // Check if this is a new game session (user wasn't playing this game before)
@@ -367,6 +385,58 @@ export class DiscordClient extends EventEmitter {
       if (isNewGameSession) {
         this.emit("friendStartedPlaying", userId, username, gameName);
       }
+    } else if (musicActivity) {
+      // Extract music information
+      // @ts-ignore - Discord.js-selfbot has state but TypeScript doesn't know
+      const state = musicActivity.state || "";
+      // @ts-ignore - Discord.js-selfbot has details but TypeScript doesn't know
+      const details = musicActivity.details || "";
+      // @ts-ignore - Discord.js-selfbot has assets but TypeScript doesn't know
+      const albumName = musicActivity.assets?.largeText || undefined;
+      // @ts-ignore - Get music player name
+      const playerName = musicActivity.name || "Music";
+
+      // The state property typically contains the artist name
+      if (state) {
+        const artistName = state;
+        const songName = details;
+
+        // Check if this is a new listening session
+        const isNewListeningSession =
+          !this.friendsListening.has(userId) ||
+          this.friendsListening.get(userId)?.artistName !== artistName;
+
+        this.friendsListening.set(userId, {
+          id: userId,
+          username,
+          artistName,
+          songName,
+          albumName,
+          playerName,
+        });
+
+        logger.info(
+          t("discord:friends.isListening", {
+            username,
+            artistName,
+            songName,
+            playerName,
+          }),
+        );
+
+        // Emit event when a friend starts listening to music for immediate processing
+        if (isNewListeningSession) {
+          this.emit(
+            "friendStartedListening",
+            userId,
+            username,
+            artistName,
+            songName,
+            albumName,
+            playerName,
+          );
+        }
+      }
     } else {
       // Remove from playing if they stopped
       if (this.friendsPlaying.has(userId)) {
@@ -375,9 +445,21 @@ export class DiscordClient extends EventEmitter {
           t("discord:friends.stoppedPlaying", {
             username: friend?.username,
             gameName: friend?.gameName,
-          })
+          }),
         );
         this.friendsPlaying.delete(userId);
+      }
+
+      // Remove from listening if they stopped
+      if (this.friendsListening.has(userId)) {
+        const friend = this.friendsListening.get(userId);
+        logger.info(
+          t("discord:friends.stoppedListening", {
+            username: friend?.username,
+            artistName: friend?.artistName,
+          }),
+        );
+        this.friendsListening.delete(userId);
       }
     }
   }
@@ -388,6 +470,10 @@ export class DiscordClient extends EventEmitter {
 
   public getFriendsPlaying(): FriendWithGame[] {
     return Array.from(this.friendsPlaying.values());
+  }
+
+  public getFriendsListening(): FriendWithMusic[] {
+    return Array.from(this.friendsListening.values());
   }
 
   private isFriend(userId: string): boolean {
@@ -411,7 +497,7 @@ export class DiscordClient extends EventEmitter {
 
   public async sendDirectMessage(
     userId: string,
-    content: string
+    content: string | { content?: string; files?: string[] },
   ): Promise<boolean> {
     try {
       const user = await this.client.users.fetch(userId);

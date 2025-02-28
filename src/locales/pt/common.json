@@ -2,10 +2,10 @@
   "app": {
     "name": "Discord Auto Meme",
     "started": "Aplicação iniciada com sucesso.",
-    "stopping": "Desligando aplicação...",
+    "stopping": "Encerrando aplicação...",
     "stopped": "Aplicação foi encerrada.",
-    "pressCtrlC": "Pressione Ctrl+C para encerrar a aplicação.",
-    "uncaughtException": "Ocorreu um erro inesperado na aplicação."
+    "pressCtrlC": "Pressione Ctrl+C para parar a aplicação.",
+    "uncaughtException": "Um erro inesperado ocorreu na aplicação."
   },
   "config": {
     "memeCountConfig": "Enviará {{count}} memes a cada {{minutes}} minutos.",
@@ -13,7 +13,7 @@
     "memeSendingDisabled": "Envio de memes está desativado (modo de teste).",
     "targetingSpecificUser": "Focando no usuário específico: {{userId}}",
     "targetingSpecificUsers": "Focando em {{count}} usuários específicos: {{userIds}}",
-    "targetingAllFriends": "Monitorando todos os amigos.",
+    "targetingAllFriends": "Focando em todos os amigos.",
     "missingEnvVars": "Variáveis de ambiente ausentes: {{variables}}",
     "createEnvFile": "Por favor, crie um arquivo .env com as variáveis necessárias.",
     "startingMemeService": "Iniciando serviço de memes. Verificará a cada {{minutes}} minutos.",
@@ -35,11 +35,11 @@
   },
   "debug": {
     "presenceUpdateTriggered": "Evento de atualização de presença acionado.",
-    "checkingAllFriends": "Verificando ativamente o status de todos os amigos.",
+    "checkingAllFriends": "Verificando status de todos os amigos ativamente.",
     "friendCacheCount": "Encontrados {{count}} amigos no cache de relacionamentos.",
     "checkingUserStatus": "Verificando status do usuário {{username}} ({{userId}}).",
-    "nullPresence": "Recebido presença nula em handlePresenceUpdate.",
-    "noUserProperty": "Presença do usuário {{userId}} não tem propriedade de usuário.",
+    "nullPresence": "Presença nula recebida em handlePresenceUpdate.",
+    "noUserProperty": "Presença para usuário {{userId}} não tem propriedade user.",
     "noActivities": "Usuário {{username}} não tem atividades.",
     "hasPresenceData": "Usuário {{username}} tem dados de presença diretamente no objeto do usuário.",
     "notAFriend": "Usuário {{username}} não é um amigo, ignorando atualização de presença.",
@@ -47,12 +47,12 @@
     "foundSharedGuilds": "Encontrados {{count}} servidores compartilhados com {{username}}.",
     "foundPresenceInGuild": "Encontrada presença para {{username}} no servidor {{guildName}} {{cacheType}}.",
     "fetchingMember": "Tentando buscar dados de membro para {{username}} no servidor {{guildName}}.",
-    "fetchedPresence": "Presença obtida com sucesso para {{username}} no servidor {{guildName}}.",
+    "fetchedPresence": "Presença buscada com sucesso para {{username}} no servidor {{guildName}}.",
     "failedFetchMember": "Não foi possível buscar membro para {{username}} no servidor {{guildName}}.",
     "noPresenceData": "Não foi possível encontrar dados de presença para {{username}} ({{userId}}).",
-    "notAFriendSkipping": "Usuário {{username}} ({{userId}}) não é um amigo, ignorando.",
+    "notAFriendSkipping": "Usuário {{username}} ({{userId}}) não é um amigo, pulando.",
     "userActivities": "Usuário {{username}} tem {{count}} atividades: {{activities}}.",
-    "checkingTargetUsers": "Verificando {{count}} usuários alvos."
+    "checkingTargetUsers": "Verificando {{count}} usuários alvo."
   },
   "alreadyRunning": "Serviço já está em execução.",
   "notRunning": "Serviço não está em execução.",
@@ -60,7 +60,10 @@
   "stopping": "Serviço está sendo encerrado.",
   "stopped": "Serviço encerrado.",
   "testMode": {
-    "wouldHaveSent": "[MODO TESTE] Teria enviado {{count}} memes para {{username}} sobre {{gameName}}.",
-    "memeUrls": "[MODO TESTE] URLs dos memes: {{urls}}..."
-  }
+    "wouldHaveSent": "[MODO DE TESTE] Teria enviado {{count}} memes para {{username}} sobre {{gameName}}.",
+    "wouldHaveSentForArtist": "[MODO DE TESTE] Teria enviado {{count}} memes para {{username}} sobre o artista {{artistName}}.",
+    "memeUrls": "[MODO DE TESTE] URLs dos memes: {{urls}}..."
+  },
+  "unknownSong": "uma música",
+  "unknownPlayer": "um player de música"
 }

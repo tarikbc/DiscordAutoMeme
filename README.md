@@ -1,16 +1,17 @@
 # Discord Auto Meme
 
-A Discord client that automatically detects when your friends are playing games and sends them relevant memes.
+A Discord client that automatically detects when your friends are playing games or listening to music and sends them relevant memes.
 
 ## Features
 
-- **Friend Activity Monitoring**: Automatically detects when friends start playing games on Discord.
+- **Friend Activity Monitoring**: Automatically detects when friends start playing games or listening to music on Discord.
 - **Game-Specific Memes**: Searches for memes related to the specific game your friend is playing.
+- **Artist-Specific Memes**: Detects when friends are listening to music and sends memes related to the artist.
 - **Customizable**: Configure how many memes to send, how often to check, and more.
 - **Test Mode**: Option to run without actually sending messages, for testing.
 - **Targeted Mode**: Can focus on a specific user for efficiency.
 - **Multilanguage Support (i18n)**: Supports English and Portuguese languages with interactive language selection at startup.
-- **Real-time Response**: Sends memes immediately when a friend starts playing a game.
+- **Real-time Response**: Sends memes immediately when a friend starts playing a game or listening to music.
 
 ## Prerequisites
 
@@ -90,19 +91,19 @@ If you want to test with or only send memes to specific friends:
 3. The application will only check for and send memes to those specific friends
 4. To target all friends again, simply remove the value or leave it empty
 
-## Real-time Game Detection
+## Real-time Activity Detection
 
-The application has two methods for detecting when friends are playing games:
+The application has two methods for detecting when friends are playing games or listening to music:
 
-1. **Event-based Detection**: Automatically detects when a friend starts playing a game through Discord's presence update events. This happens in real-time and triggers immediate meme sending.
+1. **Event-based Detection**: Automatically detects when a friend starts playing a game or listening to music through Discord's presence update events. This happens in real-time and triggers immediate meme sending.
 
-2. **Periodic Polling**: Checks all friends' status at regular intervals (defined by `CHECK_INTERVAL_MINUTES`). This serves as a backup to ensure no gaming activity is missed.
+2. **Periodic Polling**: Checks all friends' status at regular intervals (defined by `CHECK_INTERVAL_MINUTES`). This serves as a backup to ensure no activity is missed.
 
-### Checking Current Games Without Waiting
+### Checking Current Activities Without Waiting
 
-When the application starts, it immediately performs an initial check of all friends' statuses to detect anyone currently playing games. This means you don't have to wait for a friend to change their status - the application will find friends who are already playing games and send memes right away.
+When the application starts, it immediately performs an initial check of all friends' statuses to detect anyone currently playing games or listening to music. This means you don't have to wait for a friend to change their status - the application will find friends who are already active and send memes right away.
 
-If you want to force an immediate check of all friends' current gaming status:
+If you want to force an immediate check of all friends' current activities:
 
 1. Restart the application - it will automatically do an initial check of all friends
 2. Reduce `CHECK_INTERVAL_MINUTES` to a lower value (e.g., 1-5 minutes) for more frequent checks
@@ -114,7 +115,25 @@ The application uses several methods to find friends' presence information, incl
 - Guild presence cache
 - Active fetching of member data from shared servers
 
-This multi-layered approach ensures the application can detect friends playing games even when Discord's presence system doesn't immediately report all status changes.
+This multi-layered approach ensures the application can detect friends' activities even when Discord's presence system doesn't immediately report all status changes.
+
+### Music Player Detection
+
+The application can detect when your friends are listening to music through Discord's rich presence integration. This works with any music player that integrates with Discord, including:
+
+- Spotify
+- Apple Music
+- YouTube Music
+- Amazon Music
+- And any other music service that shows up in Discord presence
+
+When a friend is listening to music:
+
+1. The app detects the artist they're listening to
+2. Searches for memes related to that artist
+3. Sends personalized messages with music-themed greetings and closings
+
+This feature works just like the game detection but is specifically tailored for music listening activities.
 
 ### Troubleshooting Presence Detection
 
@@ -230,20 +249,30 @@ npm run build
 npm start
 ```
 
-## Legal Disclaimer
+## Code Quality
 
-This project uses a self-bot Discord client, which may be against Discord's Terms of Service. Use at your own risk. This project is for educational purposes only.
+The project uses ESLint to enforce code quality and consistency. ESLint is configured to check TypeScript files for common issues and style violations.
 
-## License
+### Running ESLint
 
-This project is licensed under the ISC License.
+To check your code for issues:
 
-## Performance Considerations
+```
+npm run lint
+```
 
-When using the `TARGET_USER_IDS` setting, the application switches to a more efficient mode where it:
+To automatically fix issues that can be fixed:
 
-1. Only queries status for the specific users instead of all friends
-2. Reduces the API calls to Discord
-3. Processes updates more quickly
+```
+npm run lint:fix
+```
 
-This is particularly useful when you're only interested in specific friends' gaming activity and want to minimize the application's resource usage.
+### ESLint Configuration
+
+The ESLint configuration is stored in `.eslintrc.json` and includes:
+
+- TypeScript-specific rules
+- Code style rules (indentation, quotes, semicolons, etc.)
+- Error prevention rules
+
+If you want to ignore specific files or directories from linting, add them to `.eslintignore`.

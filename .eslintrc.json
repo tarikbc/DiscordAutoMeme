@@ -1,0 +1,34 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "rules": {
+    // Disable some strict rules for initial implementation
+    "no-console": "off", // Allow console for now since this is a CLI application
+    "require-await": "warn", // Downgrade to warning
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "@typescript-eslint/explicit-function-return-type": "off", // Disable for now
+    "@typescript-eslint/no-explicit-any": "off", // Disable for now
+    "@typescript-eslint/ban-ts-comment": "off", // Allow @ts-ignore for third-party libraries
+    "@typescript-eslint/no-non-null-assertion": "off", // Allow non-null assertions
+    "@typescript-eslint/no-var-requires": "off", // Allow requires
+
+    // Style (keep these enabled)
+    "semi": ["error", "always"],
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "comma-dangle": ["error", "always-multiline"],
+    "object-curly-spacing": ["error", "always"]
+  }
+}

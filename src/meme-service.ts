@@ -49,6 +49,37 @@ export class MemeService {
         }
       }
     );
+
+    // Set up event listener for immediate meme sending when a friend starts listening to music
+    this.discordClient.on(
+      "friendStartedListening",
+      (
+        userId: string,
+        username: string,
+        artistName: string,
+        songName?: string,
+        albumName?: string,
+        playerName?: string
+      ) => {
+        if (this.isRunning) {
+          logger.info(
+            t("discord:friends.immediateResponseMusic", {
+              username,
+              artistName,
+              songName,
+              playerName: playerName || t("common:unknownPlayer"),
+            })
+          );
+          this.processFriendMusic(
+            userId,
+            username,
+            artistName,
+            songName,
+            playerName
+          );
+        }
+      }
+    );
   }
 
   public start(): void {
@@ -120,14 +151,27 @@ export class MemeService {
       // Get friends who are playing games from the Discord client
       const friendsPlaying = this.discordClient.getFriendsPlaying();
 
+      // Get friends who are listening to music
+      const friendsListening = this.discordClient.getFriendsListening();
+
       logger.info(
         t("discord:friends.foundCount", { count: friendsPlaying.length })
       );
 
-      // If we have a target user but they're not playing, log it
-      if (this.targetUserIds.length > 0 && friendsPlaying.length === 0) {
+      logger.info(
+        t("discord:friends.foundListeningCount", {
+          count: friendsListening.length,
+        })
+      );
+
+      // If we have a target user but they're not playing or listening, log it
+      if (
+        this.targetUserIds.length > 0 &&
+        friendsPlaying.length === 0 &&
+        friendsListening.length === 0
+      ) {
         logger.info(
-          t("discord:friends.notPlaying", {
+          t("discord:friends.notPlayingOrListening", {
             userId: this.targetUserIds.join(", "),
           })
         );
@@ -137,6 +181,17 @@ export class MemeService {
       // Process each friend who's playing a game
       for (const friend of friendsPlaying) {
         await this.processFriend(friend.id, friend.username, friend.gameName);
+      }
+
+      // Process each friend who's listening to music
+      for (const friend of friendsListening) {
+        await this.processFriendMusic(
+          friend.id,
+          friend.username,
+          friend.artistName,
+          friend.songName,
+          friend.playerName
+        );
       }
 
       logger.info(t("discord:friends.statusCheckCompleted"));
@@ -167,6 +222,45 @@ export class MemeService {
 
     // Send memes
     await this.sendMemesToFriend(userId, username, gameName);
+  }
+
+  private async processFriendMusic(
+    userId: string,
+    username: string,
+    artistName: string,
+    songName?: string,
+    playerName?: string
+  ): Promise<void> {
+    logger.info(
+      t("discord:friends.isListening", {
+        username,
+        artistName,
+        songName,
+        playerName: playerName || t("common:unknownPlayer"),
+      })
+    );
+
+    // Check cooldown
+    const lastSent = this.friendCooldowns.get(userId) || 0;
+    const now = Date.now();
+    const minutesSinceLastSent = (now - lastSent) / (1000 * 60);
+
+    if (minutesSinceLastSent < this.cooldownMinutes) {
+      logger.info(t("discord:friends.skippingCooldown", { username }));
+      return;
+    }
+
+    // Update cooldown
+    this.friendCooldowns.set(userId, now);
+
+    // Send memes
+    await this.sendMemesToFriendForArtist(
+      userId,
+      username,
+      artistName,
+      songName,
+      playerName
+    );
   }
 
   private async sendMemesToFriend(
@@ -208,7 +302,22 @@ export class MemeService {
         // Send each meme individually
         for (let i = 0; i < memes.length; i++) {
           const meme = memes[i];
-          await this.discordClient.sendDirectMessage(userId, meme.url);
+          try {
+            // Try to send the meme as an embedded image first
+            await this.discordClient.sendDirectMessage(userId, {
+              content: "",
+              files: [meme.url],
+            });
+          } catch (error: any) {
+            // If sending as file fails, send as a regular URL
+            logger.warn(
+              t("memes:fallbackToText", {
+                url: meme.url,
+                error: error.message || "Unknown error",
+              })
+            );
+            await this.discordClient.sendDirectMessage(userId, `${meme.url}`);
+          }
         }
 
         // Send the closing message
@@ -220,6 +329,92 @@ export class MemeService {
             count: memes.length,
             username,
             gameName,
+          })
+        );
+        const urls = memes
+          .map((m: Meme) => m.url)
+          .join(", ")
+          .substring(0, 50);
+        logger.info(t("common:testMode.memeUrls", { urls }));
+      }
+    } catch (error) {
+      logger.error(
+        t("discord:directMessage.failed", { userId }) + `: ${error}`
+      );
+    }
+  }
+
+  private async sendMemesToFriendForArtist(
+    userId: string,
+    username: string,
+    artistName: string,
+    songName?: string,
+    playerName?: string
+  ): Promise<void> {
+    logger.info(
+      t("memes:sending.sendingForArtist", {
+        count: this.memesPerSend,
+        username,
+        artistName,
+      })
+    );
+
+    try {
+      // Search for memes about the artist
+      const memes = await this.memeSearcher.searchMemes(
+        artistName,
+        this.memesPerSend
+      );
+
+      if (!memes.length) {
+        logger.warn(t("memes:noMemesFound", { artistName }));
+        return;
+      }
+
+      if (this.sendEnabled) {
+        // Build message
+        const greeting = t("discord:directMessage.greetingMusic", {
+          username,
+          artistName,
+          songName: songName || t("common:unknownSong"),
+          playerName: playerName || t("common:unknownPlayer"),
+        });
+        const closing = t("discord:directMessage.closingMusic");
+
+        // Send the greeting
+        await this.discordClient.sendDirectMessage(userId, greeting);
+
+        // Send each meme individually
+        for (let i = 0; i < memes.length; i++) {
+          const meme = memes[i];
+          try {
+            // Try to send the meme as an embedded image first
+            await this.discordClient.sendDirectMessage(userId, {
+              content: "",
+              files: [meme.url],
+            });
+          } catch (error: any) {
+            // If sending as file fails, send as a regular URL
+            logger.warn(
+              t("memes:fallbackToText", {
+                url: meme.url,
+                error: error.message || "Unknown error",
+              })
+            );
+            await this.discordClient.sendDirectMessage(userId, `${meme.url}`);
+          }
+        }
+
+        // Send the closing message
+        await this.discordClient.sendDirectMessage(userId, closing);
+      } else {
+        // Test mode - log what would have been sent
+        logger.info(
+          t("common:testMode.wouldHaveSentForArtist", {
+            count: memes.length,
+            username,
+            artistName,
+            playerName: playerName || t("common:unknownPlayer"),
           })
         );
         const urls = memes

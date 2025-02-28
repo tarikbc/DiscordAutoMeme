@@ -10,7 +10,7 @@ const initI18n = async (language: string = "en") => {
       loadPath: path.resolve(__dirname, "../locales/{{lng}}/{{ns}}.json"),
       addPath: path.resolve(
         __dirname,
-        "../locales/{{lng}}/{{ns}}.missing.json"
+        "../locales/{{lng}}/{{ns}}.missing.json",
       ),
     },
     debug: false,

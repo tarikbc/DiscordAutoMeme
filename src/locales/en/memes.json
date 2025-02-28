@@ -10,8 +10,11 @@
   },
   "sending": {
     "sending": "Sending {{count}} memes to {{username}} about {{gameName}}.",
+    "sendingForArtist": "Sending {{count}} memes to {{username}} about {{artistName}}.",
     "noMemesFound": "No memes found for {{gameName}}.",
+    "noArtistMemesFound": "No memes found for artist {{artistName}}.",
     "memeLaunching": "Sending meme #{{index}} to {{username}}.",
-    "memeDelivered": "Successfully sent meme #{{index}} to {{username}}."
+    "memeDelivered": "Successfully sent meme #{{index}} to {{username}}.",
+    "fallbackToText": "Could not send meme image for URL: {{url}} - Error: {{error}}. Sending as text instead."
   }
 }
