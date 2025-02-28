@@ -1,0 +1,27 @@
+{
+  "login": {
+    "success": "Login realizado com sucesso como {{username}}.",
+    "failure": "Falha ao fazer login no Discord."
+  },
+  "friends": {
+    "isPlaying": "Amigo {{username}} está jogando {{gameName}}.",
+    "stoppedPlaying": "Amigo {{username}} parou de jogar {{gameName}}.",
+    "foundCount": "Encontrados {{count}} amigos jogando atualmente.",
+    "notPlaying": "Usuário alvo {{userId}} não está jogando nenhum jogo.",
+    "skippingCooldown": "Ignorando {{username}} devido ao período de espera recente.",
+    "clientNotReady": "Cliente do Discord ainda não está pronto.",
+    "retryIn": "Tentando novamente em {{seconds}} segundos. Cliente do Discord ainda está carregando.",
+    "retryNow": "Tentando novamente para verificar se o cliente do Discord está pronto.",
+    "statusCheckCompleted": "Verificação do status de todos os amigos concluída.",
+    "targetUserUpdated": "Agora monitorando o usuário {{userIds}}. Foco específico ativado.",
+    "targetUsersUpdated": "Agora monitorando {{count}} usuários: {{userIds}}. Foco específico ativado.",
+    "targetUserAdded": "Adicionado usuário {{userId}} à lista de alvos. Agora monitorando {{count}} usuários.",
+    "targetUserRemoved": "Removido usuário {{userId}} da lista de alvos. Agora monitorando {{count}} usuários.",
+    "immediateResponse": "Respondendo imediatamente ao {{username}} jogando {{gameName}}."
+  },
+  "directMessage": {
+    "greeting": "AEEEEEE {{username}}!!! VI QUE TU TÁ JOGANDO {{gameName}}!!! OLHA ESSES MEMES AQUI KKKKKK!!! 🤣🤣🤣",
+    "closing": "APROVEITA O JOGO SEU NOOB!!! HAHAHAHAHA!!! 🤪🎮💯",
+    "failed": "Falha ao enviar mensagem direta para {{userId}}."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "login": {
+    "success": "Successfully logged in as {{username}}.",
+    "failure": "Failed to login to Discord."
+  },
+  "friends": {
+    "isPlaying": "Friend {{username}} is now playing {{gameName}}.",
+    "stoppedPlaying": "Friend {{username}} stopped playing {{gameName}}.",
+    "foundCount": "Found {{count}} friends currently playing games.",
+    "notPlaying": "Target user {{userId}} is not playing any games.",
+    "skippingCooldown": "Skipping {{username}} due to recent message cooldown.",
+    "clientNotReady": "Discord client is not ready yet.",
+    "retryIn": "Retrying in {{seconds}} seconds. Discord client is still loading.",
+    "retryNow": "Retrying now to check if Discord client is ready.",
+    "statusCheckCompleted": "Completed checking all friends' status.",
+    "targetUserUpdated": "Now tracking user {{userIds}}. Focused targeting activated.",
+    "targetUsersUpdated": "Now tracking {{count}} users: {{userIds}}. Focused targeting activated.",
+    "targetUserAdded": "Added user {{userId}} to target list. Now tracking {{count}} users.",
+    "targetUserRemoved": "Removed user {{userId}} from target list. Now tracking {{count}} users.",
+    "immediateResponse": "Immediately responding to {{username}} playing {{gameName}}."
+  },
+  "directMessage": {
+    "greeting": "YOOOOO {{username}}!!! ME SEE U PLAYING {{gameName}}!!! CHECK OUT THESE MEMEZ LOL!!! 🤣🤣🤣",
+    "closing": "ENJOY UR GAME N00B!!! HAHAHAHA!!! 🤪🎮💯",
+    "failed": "Failed to send direct message to {{userId}}."
+  }
+}

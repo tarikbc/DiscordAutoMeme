@@ -1,0 +1,17 @@
+{
+  "search": {
+    "searching": "Buscando {{count}} memes sobre {{gameName}}.",
+    "noResults": "Nenhum meme encontrado para {{gameName}}.",
+    "failed": "Falha ao buscar memes relacionados a {{gameName}}.",
+    "memesFound": "Encontrados {{count}} memes sobre {{gameName}}.",
+    "terms": {
+      "query": "{{gameName}} meme"
+    }
+  },
+  "sending": {
+    "sending": "Enviando {{count}} memes para {{username}} sobre {{gameName}}.",
+    "noMemesFound": "Nenhum meme encontrado para {{gameName}}.",
+    "memeLaunching": "Enviando meme #{{index}} para {{username}}.",
+    "memeDelivered": "Meme #{{index}} enviado com sucesso para {{username}}."
+  }
+}

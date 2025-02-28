@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "Discord Auto Meme",
+    "started": "Application started successfully.",
+    "stopping": "Shutting down application...",
+    "stopped": "Application has been stopped.",
+    "pressCtrlC": "Press Ctrl+C to stop the application.",
+    "uncaughtException": "An unexpected error occurred in the application."
+  },
+  "config": {
+    "memeCountConfig": "Will send {{count}} memes every {{minutes}} minutes.",
+    "memeSendingEnabled": "Meme sending is enabled.",
+    "memeSendingDisabled": "Meme sending is disabled (test mode).",
+    "targetingSpecificUser": "Targeting specific user: {{userId}}",
+    "targetingSpecificUsers": "Targeting {{count}} specific users: {{userIds}}",
+    "targetingAllFriends": "Targeting all friends.",
+    "missingEnvVars": "Missing environment variables: {{variables}}",
+    "createEnvFile": "Please create a .env file with the required variables.",
+    "startingMemeService": "Starting meme service. Will check every {{minutes}} minutes.",
+    "languageNotAvailable": "Language {{language}} not available. Falling back to English.",
+    "languageSelected": "Selected language: {{language}}"
+  },
+  "logging": {
+    "info": "INFO",
+    "error": "ERROR",
+    "warn": "WARNING",
+    "debug": "DEBUG"
+  },
+  "errors": {
+    "discordLoginFailed": "Discord login failed.",
+    "checkingFriendsError": "Error checking friends playing: {{error}}",
+    "processingFriendError": "Error processing friend {{friendId}}: {{error}}",
+    "checkingStatusError": "Error checking status for user {{userId}}: {{error}}",
+    "checkingFriendsStatusError": "Error checking friends status: {{error}}"
+  },
+  "debug": {
+    "presenceUpdateTriggered": "Presence update event triggered.",
+    "checkingAllFriends": "Checking all friends status actively.",
+    "friendCacheCount": "Found {{count}} friends in relationship cache.",
+    "checkingUserStatus": "Checking status for user {{username}} ({{userId}}).",
+    "nullPresence": "Received null presence in handlePresenceUpdate.",
+    "noUserProperty": "Presence for user {{userId}} has no user property.",
+    "noActivities": "User {{username}} has no activities.",
+    "hasPresenceData": "User {{username}} has presence data directly on user object.",
+    "notAFriend": "User {{username}} is not a friend, ignoring presence update.",
+    "checkingSharedGuilds": "No direct presence for {{username}}, checking shared guilds.",
+    "foundSharedGuilds": "Found {{count}} shared guilds with {{username}}.",
+    "foundPresenceInGuild": "Found presence for {{username}} in guild {{guildName}} {{cacheType}}.",
+    "fetchingMember": "Attempting to fetch member data for {{username}} in guild {{guildName}}.",
+    "fetchedPresence": "Successfully fetched presence for {{username}} in guild {{guildName}}.",
+    "failedFetchMember": "Could not fetch member for {{username}} in guild {{guildName}}.",
+    "noPresenceData": "Could not find any presence data for {{username}} ({{userId}}).",
+    "notAFriendSkipping": "User {{username}} ({{userId}}) is not a friend, skipping.",
+    "userActivities": "User {{username}} has {{count}} activities: {{activities}}.",
+    "checkingTargetUsers": "Checking {{count}} target users."
+  },
+  "alreadyRunning": "Service is already running.",
+  "notRunning": "Service is not running.",
+  "started": "Service started.",
+  "stopping": "Service is stopping.",
+  "stopped": "Service stopped.",
+  "testMode": {
+    "wouldHaveSent": "[TEST MODE] Would have sent {{count}} memes to {{username}} about {{gameName}}.",
+    "memeUrls": "[TEST MODE] Meme URLs: {{urls}}..."
+  }
+}
