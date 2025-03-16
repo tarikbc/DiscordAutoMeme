@@ -2,13 +2,15 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import mongoose from "mongoose";
 import logger from "./utils/logger";
 import { DiscordAccountService } from "./services/DiscordAccountService";
 import apiRoutes from "./api/routes";
 import healthRouter from "./api/routes/health";
 import swaggerSetup from "./api/swagger";
 import { errorHandler } from "./api/middleware/errorHandler";
+import { scheduleTokenCleanup } from "./jobs/tokenCleanup";
+import { scheduleAlertMonitoring } from "./jobs/alertMonitor";
+import mongoose from "mongoose";
 
 // Create Express app
 const app = express();
@@ -41,9 +43,14 @@ async function initialize() {
     );
     logger.info("Connected to MongoDB");
 
+    // Start Discord account workers
     const discordAccountService = DiscordAccountService.getInstance();
     await discordAccountService.startAllWorkers();
     logger.info("Started all Discord account workers");
+
+    // Schedule token cleanup job
+    scheduleTokenCleanup();
+    logger.info("Token cleanup job scheduled");
 
     // Graceful shutdown
     process.on("SIGTERM", async () => {
@@ -51,6 +58,10 @@ async function initialize() {
       await discordAccountService.stopAllWorkers();
       process.exit(0);
     });
+
+    // Schedule alert monitoring job
+    scheduleAlertMonitoring();
+    logger.info("Alert monitoring job scheduled");
 
     process.on("SIGINT", async () => {
       logger.info("SIGINT received. Starting graceful shutdown...");

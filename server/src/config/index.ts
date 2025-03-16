@@ -48,6 +48,26 @@ type Config = {
     lockoutTime: number;
     passwordResetExpires: number;
   };
+  alerts: {
+    monitoring: {
+      intervalMinutes: number;
+      batchSize: number;
+    };
+    email: {
+      enabled: boolean;
+      host: string;
+      port: number;
+      secure: boolean;
+      user: string;
+      pass: string;
+      from: string;
+    };
+    defaultThresholds: {
+      errorRateThreshold: number;
+      disconnectionThreshold: number;
+      cooldownMinutes: number;
+    };
+  };
 };
 
 const config = {
@@ -102,6 +122,26 @@ const config = {
     maxLoginAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS || "5", 10),
     lockoutTime: parseInt(process.env.ACCOUNT_LOCKOUT_MINUTES || "15", 10), // in minutes
     passwordResetExpires: parseInt(process.env.PASSWORD_RESET_EXPIRES || "1", 10), // in hours
+  },
+  alerts: {
+    monitoring: {
+      intervalMinutes: parseInt(process.env.ALERT_INTERVAL_MINUTES || "15", 10),
+      batchSize: parseInt(process.env.ALERT_BATCH_SIZE || "20", 10),
+    },
+    email: {
+      enabled: !!process.env.SMTP_HOST && !!process.env.SMTP_USER && !!process.env.SMTP_PASS,
+      host: process.env.SMTP_HOST || "",
+      port: parseInt(process.env.SMTP_PORT || "587", 10),
+      secure: process.env.SMTP_SECURE === "true",
+      user: process.env.SMTP_USER || "",
+      pass: process.env.SMTP_PASS || "",
+      from: process.env.SMTP_FROM || "alerts@discord-auto-meme.com",
+    },
+    defaultThresholds: {
+      errorRateThreshold: parseInt(process.env.DEFAULT_ERROR_THRESHOLD || "5", 10),
+      disconnectionThreshold: parseInt(process.env.DEFAULT_DISCONNECTION_THRESHOLD || "3", 10),
+      cooldownMinutes: parseInt(process.env.ALERT_COOLDOWN_MINUTES || "15", 10),
+    },
   },
 } as Config;
 

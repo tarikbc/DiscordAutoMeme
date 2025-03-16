@@ -125,9 +125,12 @@ userSchema.methods.comparePassword = async function (candidatePassword: string):
 
 // Generate JWT auth token
 userSchema.methods.generateAuthToken = function (): string {
+  const tokenId = `${this._id}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
   const payload = {
     id: this._id,
     email: this.email,
+    jti: tokenId, // Add JWT ID claim for revocation purposes
   };
 
   return jwt.sign(payload, config.jwt.secret, {
@@ -137,9 +140,12 @@ userSchema.methods.generateAuthToken = function (): string {
 
 // Generate refresh token
 userSchema.methods.generateRefreshToken = function (): string {
+  const tokenId = `refresh_${this._id}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
   const payload = {
     id: this._id,
     type: "refresh",
+    jti: tokenId, // Add JWT ID claim for revocation purposes
   };
 
   return jwt.sign(payload, config.jwt.refreshSecret, {

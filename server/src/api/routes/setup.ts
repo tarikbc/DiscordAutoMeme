@@ -5,6 +5,10 @@ import { UserDocument } from "../../models/User";
 import { authenticateJwt } from "../middleware/auth";
 import { DiscordAccountService } from "../../services/DiscordAccountService";
 import mongoose from "mongoose";
+import { WorkerManager } from "../../workers/WorkerManager";
+import { AccountService } from "../../services/AccountService";
+import { AlertService } from "../../services/AlertService";
+import { validate } from "../middleware/validate";
 
 const router = Router();
 
@@ -101,9 +105,18 @@ router.post(
   [
     body("name").isString().isLength({ min: 1 }).withMessage("Account name is required"),
     body("token")
-      .isString()
-      .isLength({ min: 50, max: 100 })
-      .withMessage("Valid Discord token is required"),
+      .trim()
+      .notEmpty()
+      .withMessage("Discord token is required")
+      .custom(value => {
+        // Validate token format using AccountService
+        const workerManager = WorkerManager.getInstance();
+        const accountService = AccountService.getInstance(workerManager);
+        if (!accountService.validateToken(value)) {
+          throw new Error("Invalid Discord token format or structure");
+        }
+        return true;
+      }),
   ],
   async (req: Request, res: Response) => {
     try {
@@ -185,5 +198,80 @@ router.post("/complete", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to complete setup" });
   }
 });
+
+/**
+ * @swagger
+ * /setup/alerts:
+ *   post:
+ *     summary: Set up initial alert configuration during first-time setup
+ *     tags: [Setup]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               enabled:
+ *                 type: boolean
+ *                 default: true
+ *               channelType:
+ *                 type: string
+ *                 enum: [email, webhook]
+ *                 default: email
+ *               destination:
+ *                 type: string
+ *                 description: Email address or webhook URL
+ *     responses:
+ *       200:
+ *         description: Alert configuration saved
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.post(
+  "/alerts",
+  authenticateJwt,
+  [
+    body("enabled").optional().isBoolean(),
+    body("channelType").optional().isIn(["email", "webhook"]),
+    body("destination").optional().notEmpty(),
+  ],
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const user = req.user as UserDocument;
+
+      const { enabled = true, channelType = "email", destination } = req.body;
+
+      // If destination not provided, use user's email as default
+      const actualDestination = destination || user.email;
+
+      // Create alert config
+      const alertService = AlertService.getInstance();
+      const config = await alertService.setAlertConfig(user._id, {
+        enabled,
+        channelType,
+        destination: actualDestination,
+      });
+
+      logger.info(`Alert configuration set up for user ${user._id}`);
+
+      res.json({
+        success: true,
+        message: "Alert configuration saved",
+        config,
+      });
+    } catch (error) {
+      logger.error("Error setting up alerts:", error);
+      res.status(500).json({ error: "Failed to set up alerts" });
+    }
+  },
+);
 
 export default router;

@@ -5,6 +5,8 @@ import { User, createUser, UserDocument } from "../../models/User";
 import { authenticateLocal, authenticateJwt, loginRateLimiter } from "../middleware/auth";
 import crypto from "crypto";
 import config from "../../config";
+import { TokenService } from "../../services/TokenService";
+import { extractTokenExpiry } from "../middleware/tokenVerification";
 
 const router = Router();
 
@@ -163,7 +165,7 @@ router.post(
  * @swagger
  * /auth/logout:
  *   post:
- *     summary: Logout user
+ *     summary: Logout user (revoke current token)
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
@@ -172,11 +174,62 @@ router.post(
  *         description: Logout successful
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Server error
  */
-router.post("/logout", authenticateJwt, (req: Request, res: Response) => {
-  // Note: Since we're using stateless JWT tokens, there's no server-side session to destroy
-  // In a production app, you might want to implement token blacklisting
-  res.json({ success: true, message: "Logout successful" });
+router.post("/logout", authenticateJwt, extractTokenExpiry, async (req: Request, res: Response) => {
+  try {
+    // Get the JWT from the authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1]; // Extract JWT from "Bearer <token>"
+
+    // Revoke the token
+    const tokenService = TokenService.getInstance();
+    await tokenService.revokeJwtToken(token, "logout");
+
+    res.json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    logger.error("Logout error:", error);
+    res.status(500).json({ error: "Failed to process logout" });
+  }
+});
+
+/**
+ * @swagger
+ * /auth/revoke-all:
+ *   post:
+ *     summary: Revoke all tokens for the current user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All tokens revoked successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.post("/revoke-all", authenticateJwt, async (req: Request, res: Response) => {
+  try {
+    const user = req.user as UserDocument;
+
+    // Revoke all tokens for this user
+    const tokenService = TokenService.getInstance();
+    await tokenService.revokeAllUserTokens(user._id, "user_initiated");
+
+    res.json({
+      success: true,
+      message: "All sessions have been terminated",
+    });
+  } catch (error) {
+    logger.error("Token revocation error:", error);
+    res.status(500).json({ error: "Failed to revoke tokens" });
+  }
 });
 
 /**
@@ -224,6 +277,12 @@ router.post(
       // Generate new tokens
       const token = user.generateAuthToken();
       const newRefreshToken = user.generateRefreshToken();
+
+      // Revoke the old refresh token for security
+      if (decoded.jti) {
+        const tokenService = TokenService.getInstance();
+        await tokenService.revokeJwtToken(refreshToken, "token_refresh");
+      }
 
       res.json({ token, refreshToken: newRefreshToken });
     } catch (error) {

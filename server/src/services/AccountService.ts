@@ -192,6 +192,8 @@ export class AccountService {
     page = 1,
     limit = 10,
     filter?: { roleIds?: Types.ObjectId[]; setupCompleted?: boolean },
+    sortBy: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc",
   ): Promise<{ users: IUser[]; total: number }> {
     try {
       const query: any = {};
@@ -204,11 +206,15 @@ export class AccountService {
         query.setupCompleted = filter.setupCompleted;
       }
 
+      // Build sort object
+      const sort: { [key: string]: 1 | -1 } = {};
+      sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
       const [users, total] = await Promise.all([
         User.find(query)
           .skip((page - 1) * limit)
           .limit(limit)
-          .sort({ createdAt: -1 })
+          .sort(sort)
           .exec(),
         User.countDocuments(query).exec(),
       ]);
@@ -571,12 +577,57 @@ export class AccountService {
 
   /**
    * Validate Discord token
+   * A proper Discord token consists of three parts separated by periods:
+   * 1. User ID (encoded in base64)
+   * 2. Timestamp (encoded)
+   * 3. HMAC (cryptographic signature)
    */
   validateToken(token: string): boolean {
-    // TODO: Implement token validation logic in Phase 2
-    // This will involve making a test connection to Discord
-    // to verify the token is valid
-    console.log("validateToken", token);
-    return true;
+    try {
+      if (!token) return false;
+
+      // Check basic format: three sections separated by periods
+      const parts = token.split(".");
+      if (parts.length !== 3) return false;
+
+      const [idPart, timestampPart, hmacPart] = parts;
+
+      // Check part lengths
+      // User ID part should be around 20-30 characters
+      if (idPart.length < 15 || idPart.length > 40) return false;
+
+      // Timestamp part is usually around 6-10 characters
+      if (timestampPart.length < 4 || timestampPart.length > 12) return false;
+
+      // HMAC part is usually 27+ characters
+      if (hmacPart.length < 25) return false;
+
+      // Validate characters - Discord tokens use Base64 URL-safe character set
+      // This includes alphanumeric characters, hyphens, and underscores
+      const validCharRegex = /^[A-Za-z0-9_-]+$/;
+      if (
+        !validCharRegex.test(idPart) ||
+        !validCharRegex.test(timestampPart) ||
+        !validCharRegex.test(hmacPart)
+      ) {
+        return false;
+      }
+
+      // First part should be a valid Base64 string that decodes to a number
+      try {
+        // Try to decode the first part (user ID)
+        // For Discord tokens, the first part is base64-encoded and should decode to a valid number
+        const userIdBytes = Buffer.from(idPart, "base64").toString("utf-8");
+        if (!/^\d+$/.test(userIdBytes)) return false;
+      } catch {
+        return false;
+      }
+
+      logger.info("Discord token validated successfully");
+      return true;
+    } catch (error) {
+      logger.error("Error validating Discord token:", error);
+      return false;
+    }
   }
 }

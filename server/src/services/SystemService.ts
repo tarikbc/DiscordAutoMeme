@@ -216,4 +216,37 @@ export class SystemService {
       },
     };
   }
+
+  /**
+   * Get comprehensive system metrics for dashboard
+   */
+  async getSystemMetrics(): Promise<any> {
+    try {
+      // Get the latest metrics
+      const metrics = await this.getLatestMetrics();
+
+      // Get metrics history for the last 12 hours
+      const usageHistory = await this.getMetricsHistory(12);
+
+      return {
+        current: {
+          cpu: metrics?.cpuUsage || 0,
+          memory: metrics?.memoryUsage || 0,
+          threadCount: metrics?.threadCount || 0,
+          activeClients: metrics?.activeClients || 0,
+          activeUsers: metrics?.activeUsers || 0,
+          requestsPerMinute: metrics?.requestsPerMinute || 0,
+          errorRate: metrics?.errorRate || 0,
+        },
+        history: usageHistory.map(point => ({
+          timestamp: point.timestamp,
+          cpu: point.cpuUsage,
+          memory: point.memoryUsage,
+        })),
+      };
+    } catch (error) {
+      logger.error("Error getting system metrics:", error);
+      throw error;
+    }
+  }
 }

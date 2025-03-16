@@ -7,8 +7,17 @@ import { DiscordAccountService } from "../../services/DiscordAccountService";
 import { ActivityService } from "../../services/ActivityService";
 import { ContentService } from "../../services/ContentService";
 import { SystemService } from "../../services/SystemService";
+import cache from "../../utils/cache";
 
 const router = Router();
+
+// Cache TTL settings (in seconds)
+const CACHE_TTL = {
+  ACCOUNTS: 60, // 1 minute
+  ACTIVITY: 60, // 1 minute
+  CONTENT: 300, // 5 minutes
+  SYSTEM: 120, // 2 minutes
+};
 
 // Middleware to require authentication for all routes
 router.use(authenticateJwt);
@@ -32,37 +41,47 @@ router.use(authenticateJwt);
 router.get("/accounts", async (req: Request, res: Response) => {
   try {
     const user = req.user as UserDocument;
+    const cacheKey = `dashboard:accounts:${user._id}`;
 
-    // Get services
-    const accountService = DiscordAccountService.getInstance();
-    const systemService = SystemService.getInstance();
+    // Try to get data from cache first
+    const result = await cache.getOrSet(
+      cacheKey,
+      async () => {
+        // Get services
+        const accountService = DiscordAccountService.getInstance();
+        const systemService = SystemService.getInstance();
 
-    // Get account data
-    const accounts = await accountService.getAccountsByUser(user._id);
-    const accountStatuses = await Promise.all(
-      accounts.map(async account => {
-        const status = await systemService.getAccountStatus(account._id);
+        // Get account data
+        const accounts = await accountService.getAccountsByUser(user._id);
+        const accountStatuses = await Promise.all(
+          accounts.map(async account => {
+            const status = await systemService.getAccountStatus(account._id);
+            return {
+              id: account._id,
+              name: account.name,
+              status: status ? status.isConnected : false,
+              uptime: status ? status.uptime : 0,
+              lastActivity: status ? status.lastActivity : null,
+            };
+          }),
+        );
+
+        // Calculate summary statistics
+        const totalAccounts = accounts.length;
+        const activeAccounts = accountStatuses.filter(a => a.status).length;
+
         return {
-          id: account._id,
-          name: account.name,
-          status: status ? status.isConnected : false,
-          uptime: status ? status.uptime : 0,
-          lastActivity: status ? status.lastActivity : null,
+          summary: {
+            totalAccounts,
+            activeAccounts,
+          },
+          accounts: accountStatuses,
         };
-      }),
+      },
+      CACHE_TTL.ACCOUNTS,
     );
 
-    // Calculate summary statistics
-    const totalAccounts = accounts.length;
-    const activeAccounts = accountStatuses.filter(a => a.status).length;
-
-    res.json({
-      summary: {
-        totalAccounts,
-        activeAccounts,
-      },
-      accounts: accountStatuses,
-    });
+    res.json(result);
   } catch (error) {
     logger.error("Failed to get dashboard account data:", error);
     res.status(500).json({ error: "Failed to get dashboard account data" });
@@ -109,35 +128,48 @@ router.get(
 
       const user = req.user as UserDocument;
       const limit = parseInt(req.query.limit as string) || 10;
+      const cacheKey = `dashboard:activity:${user._id}:${limit}`;
 
-      // Get services
-      const activityService = ActivityService.getInstance();
-      const accountService = DiscordAccountService.getInstance();
+      // Try to get data from cache first
+      const result = await cache.getOrSet(
+        cacheKey,
+        async () => {
+          // Get services
+          const activityService = ActivityService.getInstance();
+          const accountService = DiscordAccountService.getInstance();
 
-      // Get user's accounts
-      const accounts = await accountService.getAccountsByUser(user._id);
-      const accountIds = accounts.map(account => account._id);
+          // Get user's accounts
+          const accounts = await accountService.getAccountsByUser(user._id);
+          const accountIds = accounts.map(account => account._id);
 
-      // Get recent activity across all accounts
-      const recentActivity = await activityService.getRecentActivityByAccountIds(accountIds, limit);
+          // Get recent activity across all accounts
+          const recentActivity = await activityService.getRecentActivityByAccountIds(
+            accountIds,
+            limit,
+          );
 
-      // Map activity data with account names
-      const accountMap = new Map(accounts.map(a => [a._id.toString(), a.name]));
-      const formattedActivity = recentActivity.map((activity: any) => ({
-        id: activity._id,
-        accountId: activity.accountId,
-        accountName: accountMap.get(activity.accountId.toString()) || "Unknown Account",
-        friendId: activity.friendId,
-        friendUsername: activity.friendUsername,
-        type: activity.type,
-        timestamp: activity.timestamp,
-        details: activity.details,
-      }));
+          // Map activity data with account names
+          const accountMap = new Map(accounts.map(a => [a._id.toString(), a.name]));
+          const formattedActivity = recentActivity.map((activity: any) => ({
+            id: activity._id,
+            accountId: activity.accountId,
+            accountName: accountMap.get(activity.accountId.toString()) || "Unknown Account",
+            friendId: activity.friendId,
+            friendUsername: activity.friendUsername,
+            type: activity.type,
+            timestamp: activity.timestamp,
+            details: activity.details,
+          }));
 
-      res.json({
-        activity: formattedActivity,
-        total: formattedActivity.length,
-      });
+          return {
+            activity: formattedActivity,
+            total: formattedActivity.length,
+          };
+        },
+        CACHE_TTL.ACTIVITY,
+      );
+
+      res.json(result);
     } catch (error) {
       logger.error("Failed to get dashboard activity data:", error);
       res.status(500).json({ error: "Failed to get dashboard activity data" });
@@ -185,42 +217,52 @@ router.get(
 
       const user = req.user as UserDocument;
       const days = parseInt(req.query.days as string) || 7;
+      const cacheKey = `dashboard:content:${user._id}:${days}`;
 
-      // Get services
-      const contentService = ContentService.getInstance();
-      const accountService = DiscordAccountService.getInstance();
+      // Try to get data from cache first
+      const result = await cache.getOrSet(
+        cacheKey,
+        async () => {
+          // Get services
+          const contentService = ContentService.getInstance();
+          const accountService = DiscordAccountService.getInstance();
 
-      // Get user's accounts
-      const accounts = await accountService.getAccountsByUser(user._id);
-      const accountIds = accounts.map(account => account._id);
+          // Get user's accounts
+          const accounts = await accountService.getAccountsByUser(user._id);
+          const accountIds = accounts.map(account => account._id);
 
-      // Get content statistics
-      const contentStats = await contentService.getContentStatsByAccountIds(accountIds, days);
+          // Get content statistics
+          const contentStats = await contentService.getContentStatsByAccountIds(accountIds, days);
 
-      // Calculate daily aggregates
-      const dailyStats = contentStats.dailyStats.map(day => ({
-        date: day.date,
-        total: day.count,
-        byType: day.byType,
-      }));
+          // Calculate daily aggregates
+          const dailyStats = contentStats.dailyStats.map(day => ({
+            date: day.date,
+            total: day.count,
+            byType: day.byType,
+          }));
 
-      // Map account-specific stats with names
-      const accountMap = new Map(accounts.map(a => [a._id.toString(), a.name]));
-      const accountStats = contentStats.accountStats.map(stat => ({
-        accountId: stat.accountId,
-        accountName: accountMap.get(stat.accountId.toString()) || "Unknown Account",
-        total: stat.count,
-        byType: stat.byType,
-      }));
+          // Map account-specific stats with names
+          const accountMap = new Map(accounts.map(a => [a._id.toString(), a.name]));
+          const accountStats = contentStats.accountStats.map(stat => ({
+            accountId: stat.accountId,
+            accountName: accountMap.get(stat.accountId.toString()) || "Unknown Account",
+            total: stat.count,
+            byType: stat.byType,
+          }));
 
-      res.json({
-        summary: {
-          totalDelivered: contentStats.total,
-          byType: contentStats.byType,
+          return {
+            summary: {
+              totalDelivered: contentStats.total,
+              byType: contentStats.byType,
+            },
+            daily: dailyStats,
+            accounts: accountStats,
+          };
         },
-        daily: dailyStats,
-        accounts: accountStats,
-      });
+        CACHE_TTL.CONTENT,
+      );
+
+      res.json(result);
     } catch (error) {
       logger.error("Failed to get dashboard content data:", error);
       res.status(500).json({ error: "Failed to get dashboard content data" });
@@ -250,37 +292,20 @@ router.get("/system", async (req: Request, res: Response) => {
   try {
     const user = req.user as UserDocument;
 
-    // Check if user has system metrics permission
-    const hasPermission = await user.hasPermission("system:view_metrics");
-    if (!hasPermission) {
-      return res
-        .status(403)
-        .json({ error: "Access denied. Requires system:view_metrics permission." });
-    }
+    // For system stats, cache per user since this may include admin-specific data
+    const cacheKey = `dashboard:system:${user._id}`;
 
-    // Get services
-    const systemService = SystemService.getInstance();
-
-    // Get system metrics
-    const metrics = await systemService.getLatestMetrics();
-    const usageHistory = await systemService.getMetricsHistory(12); // Last 12 hours
-
-    res.json({
-      current: {
-        cpu: metrics?.cpuUsage || 0,
-        memory: metrics?.memoryUsage || 0,
-        threadCount: metrics?.threadCount || 0,
-        activeClients: metrics?.activeClients || 0,
-        activeUsers: metrics?.activeUsers || 0,
-        requestsPerMinute: metrics?.requestsPerMinute || 0,
-        errorRate: metrics?.errorRate || 0,
+    // Try to get data from cache first
+    const result = await cache.getOrSet(
+      cacheKey,
+      async () => {
+        const systemService = SystemService.getInstance();
+        return await systemService.getSystemMetrics();
       },
-      history: usageHistory.map(point => ({
-        timestamp: point.timestamp,
-        cpu: point.cpuUsage,
-        memory: point.memoryUsage,
-      })),
-    });
+      CACHE_TTL.SYSTEM,
+    );
+
+    res.json(result);
   } catch (error) {
     logger.error("Failed to get dashboard system data:", error);
     res.status(500).json({ error: "Failed to get dashboard system data" });

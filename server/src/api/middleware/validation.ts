@@ -1,4 +1,18 @@
-import { body, param } from "express-validator";
+import { body, param, CustomValidator } from "express-validator";
+import { AccountService } from "../../services/AccountService";
+import { WorkerManager } from "../../workers/WorkerManager";
+
+// Custom validator for Discord tokens
+const isValidDiscordToken: CustomValidator = value => {
+  // Use the WorkerManager singleton for AccountService initialization
+  const workerManager = WorkerManager.getInstance();
+  const accountService = AccountService.getInstance(workerManager);
+
+  if (!accountService.validateToken(value)) {
+    throw new Error("Invalid Discord token format or structure");
+  }
+  return true;
+};
 
 export const discordAccountValidation = {
   create: [
@@ -12,8 +26,7 @@ export const discordAccountValidation = {
       .trim()
       .notEmpty()
       .withMessage("Discord token is required")
-      .isLength({ min: 50, max: 100 })
-      .withMessage("Invalid Discord token format"),
+      .custom(isValidDiscordToken),
     body("settings.autoReconnect")
       .optional()
       .isBoolean()
@@ -47,8 +60,7 @@ export const discordAccountValidation = {
       .trim()
       .notEmpty()
       .withMessage("Token cannot be empty")
-      .isLength({ min: 50, max: 100 })
-      .withMessage("Invalid Discord token format"),
+      .custom(isValidDiscordToken),
     body("isActive").optional().isBoolean().withMessage("isActive must be a boolean"),
     body("settings").optional().isObject().withMessage("settings must be an object"),
   ],

@@ -339,4 +339,13 @@ export class WorkerManager extends EventEmitter {
 
     worker.postMessage(message);
   }
+
+  /**
+   * Get a worker by ID
+   * @param workerId The ID of the worker to retrieve
+   * @returns The worker instance or undefined if not found
+   */
+  getWorker(workerId: string): Worker | undefined {
+    return this.workers.get(workerId);
+  }
 }

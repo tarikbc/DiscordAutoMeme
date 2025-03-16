@@ -45,7 +45,7 @@ describe("SystemService", () => {
       },
     ]);
 
-    systemService = new SystemService(mockWorkerManager);
+    systemService = SystemService.getInstance();
   });
 
   afterEach(async () => {
@@ -152,6 +152,52 @@ describe("SystemService", () => {
         active: 2,
         error: 0,
       });
+    });
+  });
+
+  describe("Dashboard Metrics", () => {
+    it("should get comprehensive system metrics for dashboard", async () => {
+      // Create a recent metric for testing
+      await SystemMetrics.create({
+        timestamp: new Date(),
+        cpuUsage: 45.5,
+        memoryUsage: { total: 1000, used: 400, free: 600 },
+        threadCount: 5,
+        activeClients: 10,
+        activeUsers: 3,
+        requestsPerMinute: 120,
+        errorRate: 0.5,
+      });
+
+      const metrics = await systemService.getSystemMetrics();
+
+      expect(metrics).toHaveProperty("current");
+      expect(metrics).toHaveProperty("history");
+
+      // Check current metrics
+      expect(metrics.current).toHaveProperty("cpu");
+      expect(metrics.current).toHaveProperty("memory");
+      expect(metrics.current).toHaveProperty("threadCount");
+      expect(metrics.current).toHaveProperty("activeClients");
+      expect(metrics.current).toHaveProperty("activeUsers");
+      expect(metrics.current).toHaveProperty("requestsPerMinute");
+      expect(metrics.current).toHaveProperty("errorRate");
+
+      // Check history is an array
+      expect(Array.isArray(metrics.history)).toBe(true);
+    });
+
+    it("should handle empty metrics data gracefully", async () => {
+      // Ensure no metrics exist
+      await SystemMetrics.deleteMany({});
+
+      const metrics = await systemService.getSystemMetrics();
+
+      // Should still return a structured response with default values
+      expect(metrics.current.cpu).toBe(0);
+      expect(metrics.current.threadCount).toBe(0);
+      expect(Array.isArray(metrics.history)).toBe(true);
+      expect(metrics.history.length).toBe(0);
     });
   });
 });

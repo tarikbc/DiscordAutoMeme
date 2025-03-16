@@ -40,6 +40,20 @@ router.use(requirePermission("users:view"));
  *           type: string
  *           enum: [admin, user]
  *         description: Filter by role
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [email, createdAt, lastLogin, discordAccountsCount]
+ *           default: createdAt
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort direction (ascending or descending)
  *     responses:
  *       200:
  *         description: List of users
@@ -58,6 +72,14 @@ router.get(
       .optional()
       .isInt({ min: 1, max: 100 })
       .withMessage("Limit must be between 1 and 100"),
+    query("sortBy")
+      .optional()
+      .isIn(["email", "createdAt", "lastLogin", "discordAccountsCount"])
+      .withMessage("sortBy must be one of: email, createdAt, lastLogin, discordAccountsCount"),
+    query("sortOrder")
+      .optional()
+      .isIn(["asc", "desc"])
+      .withMessage("sortOrder must be either asc or desc"),
   ],
   async (req: Request, res: Response) => {
     try {
@@ -71,18 +93,26 @@ router.get(
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
+      // Parse sorting parameters
+      const sortBy = (req.query.sortBy as string) || "createdAt";
+      const sortOrder = (req.query.sortOrder as string) || "desc";
+
+      // Build sort object
+      const sort: { [key: string]: 1 | -1 } = {};
+      sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
       // Build filter
       const filter: any = {};
       if (req.query.role) {
         filter.role = req.query.role;
       }
 
-      // Get users with pagination
+      // Get users with pagination and sorting
       const users = await User.find(filter)
         .select("-passwordHash -resetPasswordToken -resetPasswordExpires")
         .skip(skip)
         .limit(limit)
-        .sort({ createdAt: -1 });
+        .sort(sort);
 
       // Get total count
       const total = await User.countDocuments(filter);
@@ -93,6 +123,8 @@ router.get(
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+        sortBy,
+        sortOrder,
       });
     } catch (error) {
       logger.error("Failed to get users:", error);

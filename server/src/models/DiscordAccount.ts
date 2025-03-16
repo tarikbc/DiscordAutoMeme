@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { IUser } from "./User";
 
 interface IDiscordAccountMethods {
   updateStatus(isConnected: boolean): Promise<void>;
@@ -45,7 +44,7 @@ export interface IDiscordAccountSettings {
 
 export interface IDiscordAccount extends Document {
   _id: Types.ObjectId;
-  userId: Types.ObjectId | IUser;
+  userId: Types.ObjectId;
   name: string;
   token: string;
   isActive: boolean;

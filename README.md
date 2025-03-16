@@ -20,6 +20,8 @@ A scalable multi-client Discord service that automatically detects when your fri
 - **Secure Authentication**: Email/password authentication with JWT tokens and refresh mechanism
 - **Role-based Access Control**: Flexible permission system for controlling access to features
 - **Real-time Status Monitoring**: Track the status of Discord clients with history
+- **Critical Issue Alerting**: Customizable alerts for connection problems, token issues, and error rates with batch processing for scalability
+- **Monitoring Dashboard**: Real-time metrics and status information
 
 ## Development Roadmap
 
@@ -402,6 +404,7 @@ npm run lint:fix
 - **Password Security**: Passwords are hashed using bcrypt with appropriate salt rounds
 - **JWT Authentication**: Secure authentication using JWT tokens with proper expiration
 - **Token Refresh**: Implemented token refresh mechanism to maintain sessions securely
+- **Token Revocation**: System for invalidating tokens on logout, password change, or security concerns
 - **Rate Limiting**: Protection against brute force attacks
 - **Role-based Access Control**: Granular permissions system for access control
 - **Encrypted Token Storage**: Discord tokens are encrypted at rest in the database
