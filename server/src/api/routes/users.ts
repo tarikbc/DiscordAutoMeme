@@ -103,9 +103,6 @@ router.get(
 
       // Build filter
       const filter: any = {};
-      if (req.query.role) {
-        filter.role = req.query.role;
-      }
 
       // Get users with pagination and sorting
       const users = await User.find(filter)
@@ -170,9 +167,12 @@ router.get(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(req.params.id).select(
-        "-passwordHash -resetPasswordToken -resetPasswordExpires",
-      );
+      const user = await User.findById(req.params.id)
+        .select("-passwordHash -resetPasswordToken -resetPasswordExpires")
+        .populate({
+          path: "roles",
+          select: "name description",
+        });
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -268,6 +268,12 @@ router.put(
       }
 
       await user.save();
+
+      // Populate roles for response
+      await user.populate({
+        path: "roles",
+        select: "name description",
+      });
 
       // Send response
       return res.json({
@@ -441,6 +447,121 @@ router.post(
     } catch (error) {
       logger.error("Failed to create user:", error);
       return res.status(500).json({ error: "Failed to create user" });
+    }
+  },
+);
+
+/**
+ * @swagger
+ * /users/profile:
+ *   get:
+ *     summary: Get current user profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile information
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.get("/profile", async (req: Request, res: Response) => {
+  try {
+    const user = req.user as UserDocument;
+
+    // Populate roles before sending response
+    await user.populate({
+      path: "roles",
+      select: "name description",
+    });
+
+    res.json({
+      id: user._id,
+      email: user.email,
+      roles: user.roles,
+      setupCompleted: user.setupCompleted,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin,
+    });
+  } catch (error) {
+    logger.error("Failed to get user profile:", error);
+    res.status(500).json({ error: "Failed to get user profile" });
+  }
+});
+
+/**
+ * @swagger
+ * /users/profile:
+ *   put:
+ *     summary: Update current user profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.put(
+  "/profile",
+  [
+    body("email").optional().isEmail().normalizeEmail().withMessage("Valid email is required"),
+    body("name").optional().isString().trim().withMessage("Name should be a string"),
+  ],
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const user = req.user as UserDocument;
+
+      // Update fields
+      if (req.body.email) {
+        user.email = req.body.email;
+      }
+
+      // Add other fields to update as needed
+
+      await user.save();
+
+      // Populate roles before sending response
+      await user.populate({
+        path: "roles",
+        select: "name description",
+      });
+
+      // Send response
+      res.json({
+        id: user._id,
+        email: user.email,
+        roles: user.roles,
+        setupCompleted: user.setupCompleted,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
+      });
+    } catch (error) {
+      logger.error("Failed to update user profile:", error);
+      res.status(500).json({ error: "Failed to update user profile" });
     }
   },
 );

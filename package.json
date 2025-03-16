@@ -4,13 +4,28 @@
   "description": "A Discord client that sends memes based on friends' gaming activities",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc && npm run copy-locales",
-    "copy-locales": "mkdir -p dist/locales && cp -r src/locales/* dist/locales/",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "start": "cd server && npm run start",
+    "start:client": "cd client && npm run preview",
+    "start:all": "concurrently \"npm run start\" \"npm run start:client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "seed": "cd server && npm run seed",
+    "test": "concurrently \"cd server && npm test\" \"cd client && npm test\"",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test",
+    "test:watch": "cd client && npm run test:watch",
+    "lint": "concurrently \"cd server && npm run lint\" \"cd client && npm run lint\"",
+    "lint:fix": "concurrently \"cd server && npm run lint:fix\" \"cd client && npm run lint:fix\"",
+    "format": "concurrently \"cd server && npm run format\" \"cd client && npm run format\"",
+    "format:check": "cd server && npm run format:check",
+    "install:all": "npm install && npm run install:server && npm run install:client",
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "clean": "rm -rf node_modules && rm -rf server/node_modules && rm -rf client/node_modules"
   },
   "keywords": [
     "discord",
@@ -30,8 +45,10 @@
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@types/morgan": "^1.9.9",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "concurrently": "^9.1.2",
     "eslint": "^8.56.0",
     "nodemon": "^3.1.9",
     "typescript": "^5.7.3"

@@ -91,11 +91,14 @@ export class WorkerManager extends EventEmitter {
         lastActivity: new Date(),
       });
 
-      const worker = new Worker(path.join(__dirname, "DiscordWorker.js"), {
+      // Extract only serializable settings from account settings
+      const serializableSettings = this.getSerializableSettings(account.settings);
+
+      const worker = new Worker(path.join(__dirname, "../../dist/workers/DiscordWorker.js"), {
         workerData: {
           accountId,
           token,
-          settings: account.settings,
+          settings: serializableSettings,
         },
       });
 
@@ -110,6 +113,50 @@ export class WorkerManager extends EventEmitter {
       logger.error(`Failed to start worker for account ${accountId}:`, error);
       throw error;
     }
+  }
+
+  // Helper method to ensure settings are serializable
+  private getSerializableSettings(settings: IDiscordAccount["settings"]): Record<string, any> {
+    // Create a new object with only primitive values that can be serialized
+    const serializableSettings: Record<string, any> = {};
+
+    if (!settings) return serializableSettings;
+
+    // Add primitive values that are safe for transfer
+    if (settings.autoReconnect !== undefined) {
+      serializableSettings.autoReconnect = settings.autoReconnect;
+    }
+
+    if (settings.statusUpdateInterval !== undefined) {
+      serializableSettings.statusUpdateInterval = settings.statusUpdateInterval;
+    }
+
+    // Handle content preferences (deep copy to avoid reference issues)
+    if (settings.contentPreferences) {
+      serializableSettings.contentPreferences = {
+        memes: settings.contentPreferences.memes,
+        gifs: settings.contentPreferences.gifs,
+        quotes: settings.contentPreferences.quotes,
+        news: settings.contentPreferences.news,
+        jokes: settings.contentPreferences.jokes,
+      };
+    }
+
+    // Handle delivery preferences (deep copy to avoid reference issues)
+    if (settings.deliveryPreferences) {
+      serializableSettings.deliveryPreferences = {
+        frequency: settings.deliveryPreferences.frequency,
+        timeWindows:
+          settings.deliveryPreferences.timeWindows?.map(window => ({
+            start: window.start,
+            end: window.end,
+          })) || [],
+      };
+    }
+
+    // Add any other settings properties here that are safe for serialization
+
+    return serializableSettings;
   }
 
   public async stopWorker(accountId: string): Promise<void> {

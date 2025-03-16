@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use(
   morgan("combined", {
-    stream: { write: message => logger.info(message.trim()) },
+    stream: { write: (message: string) => logger.info(message.trim()) },
   }),
 );
 

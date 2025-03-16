@@ -1,4 +1,10 @@
 import rateLimit from "express-rate-limit";
+import { Request } from "express";
+
+const skipLocalhost = (req: Request) => {
+  if (!req.ip) return false;
+  return req.ip === "127.0.0.1" || req.ip === "::1" || req.ip === "localhost";
+};
 
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -9,6 +15,7 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skip: skipLocalhost,
 });
 
 // More strict limiter for account creation
@@ -21,4 +28,15 @@ export const createAccountLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipLocalhost,
+});
+
+// Rate limiting for login attempts
+export const loginRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per IP per window
+  message: { error: "Too many login attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipLocalhost,
 });

@@ -5,7 +5,6 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { User, UserDocument } from "../../models/User";
 import config from "../../config";
 import logger from "../../utils/logger";
-import rateLimit from "express-rate-limit";
 import "express";
 
 // Configure passport with JWT strategy
@@ -101,47 +100,3 @@ export const authenticateLocal = (req: Request, res: Response, next: NextFunctio
     },
   )(req, res, next);
 };
-
-// Role-based access control middleware
-export const requireRole = (role: "admin" | "user") => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    // Log deprecation warning
-    logger.warn(
-      "requireRole middleware is deprecated. Please use requirePermission from permissions.ts instead.",
-    );
-
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const user = req.user as UserDocument;
-
-    // Deprecated: Use permission-based approach instead
-    // For admin role check, now redirecting to check if user has admin permissions
-    if (role === "admin") {
-      user
-        .hasPermission("roles:manage")
-        .then(hasPermission => {
-          if (!hasPermission) {
-            return res.status(403).json({ error: "Forbidden" });
-          }
-          next();
-        })
-        .catch(error => {
-          logger.error("Permission check error:", error);
-          return res.status(500).json({ error: "Error checking permissions" });
-        });
-    } else {
-      next();
-    }
-  };
-};
-
-// Rate limiting for login attempts
-export const loginRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per IP per window
-  message: { error: "Too many login attempts, please try again later" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});

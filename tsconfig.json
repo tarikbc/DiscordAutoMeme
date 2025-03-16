@@ -1,16 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": false
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "extends": "./server/tsconfig.json",
+  "_comment": "This root tsconfig.json is deprecated. Please use server/tsconfig.json or client/tsconfig.json directly."
 }

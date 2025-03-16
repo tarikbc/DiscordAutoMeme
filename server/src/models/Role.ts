@@ -48,7 +48,7 @@ export const Role = mongoose.model<IRole>("Role", roleSchema);
 // Default system roles
 export const SYSTEM_ROLES = {
   ADMIN: {
-    name: "Administrator",
+    name: "admin",
     description: "Full access to all system features",
     isSystem: true,
     permissionCodes: [
@@ -69,7 +69,7 @@ export const SYSTEM_ROLES = {
     ],
   },
   USER: {
-    name: "User",
+    name: "user",
     description: "Standard user with limited access",
     isSystem: true,
     permissionCodes: [
@@ -83,7 +83,7 @@ export const SYSTEM_ROLES = {
     ],
   },
   VIEWER: {
-    name: "Viewer",
+    name: "viewer",
     description: "Read-only access to their own accounts",
     isSystem: true,
     permissionCodes: ["accounts:view_own", "content:view_own"],

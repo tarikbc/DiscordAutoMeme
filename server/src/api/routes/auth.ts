@@ -2,11 +2,12 @@ import { Router, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import logger from "../../utils/logger";
 import { User, createUser, UserDocument } from "../../models/User";
-import { authenticateLocal, authenticateJwt, loginRateLimiter } from "../middleware/auth";
+import { authenticateLocal, authenticateJwt } from "../middleware/auth";
 import crypto from "crypto";
 import config from "../../config";
 import { TokenService } from "../../services/TokenService";
 import { extractTokenExpiry } from "../middleware/tokenVerification";
+import { loginRateLimiter } from "../middleware/rateLimiter";
 
 const router = Router();
 
@@ -76,12 +77,19 @@ router.post(
       // Update last login time
       await user.updateLastLogin();
 
+      // Populate roles before sending response
+      await user.populate({
+        path: "roles",
+        select: "name description", // Only send necessary fields
+      });
+
       res.status(201).json({
         message: "Registration successful",
         user: {
           id: user._id,
           email: user.email,
           roles: user.roles,
+          setupCompleted: user.setupCompleted,
         },
         token,
         refreshToken,
@@ -143,6 +151,12 @@ router.post(
 
       // Update last login time
       await user.updateLastLogin();
+
+      // Populate roles before sending response
+      await user.populate({
+        path: "roles",
+        select: "name description", // Only send necessary fields
+      });
 
       res.json({
         user: {
