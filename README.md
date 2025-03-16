@@ -1,278 +1,393 @@
-# Discord Auto Meme
+# Discord Auto Content
 
-A Discord client that automatically detects when your friends are playing games or listening to music and sends them relevant memes.
+A scalable multi-client Discord service that automatically detects when your friends are playing games or listening to music and sends them relevant content.
 
 ## Features
 
-- **Friend Activity Monitoring**: Automatically detects when friends start playing games or listening to music on Discord.
-- **Game-Specific Memes**: Searches for memes related to the specific game your friend is playing.
-- **Artist-Specific Memes**: Detects when friends are listening to music and sends memes related to the artist.
-- **Customizable**: Configure how many memes to send, how often to check, and more.
-- **Test Mode**: Option to run without actually sending messages, for testing.
-- **Targeted Mode**: Can focus on a specific user for efficiency.
-- **Multilanguage Support (i18n)**: Supports English and Portuguese languages with interactive language selection at startup.
-- **Real-time Response**: Sends memes immediately when a friend starts playing a game or listening to music.
+- **Multi-Client Support**: Run multiple Discord clients simultaneously, each with its own configuration
+- **Worker Thread Architecture**: Each Discord client runs in its own worker thread for improved stability and performance
+- **Friend Activity Monitoring**: Automatically detects when friends start playing games or listening to music on Discord
+- **Game-Specific Content**: Searches for content related to the specific game your friend is playing
+- **Artist-Specific Content**: Detects when friends are listening to music and sends content related to the artist
+- **System Monitoring**: Real-time monitoring of system metrics, worker status, and performance
+- **Customizable**: Configure how many content items to send, how often to check, and more
+- **Test Mode**: Option to run without actually sending messages, for testing
+- **Targeted Mode**: Can focus on specific users for efficiency
+- **Multilanguage Support (i18n)**: Supports English and Portuguese languages
+- **Real-time Response**: Sends content immediately when a friend starts playing a game or listening to music
+- **MongoDB Integration**: Persistent storage for accounts, friends, and content history
+- **RESTful API**: Comprehensive API for managing accounts and monitoring system status
+
+## Development Roadmap
+
+The project is being developed in six phases, each focusing on specific aspects of the system:
+
+### Phase 1: Server-Side Restructuring (Current Phase)
+
+- [x] Set up Express server with TypeScript
+- [x] Implement worker thread architecture for Discord client management
+- [x] MongoDB integration with Mongoose schemas
+- [x] Basic testing infrastructure
+- [x] Activity monitoring system
+  - [x] Game activity detection
+  - [x] Music activity detection
+  - [x] Streaming activity detection
+  - [x] Watching activity detection
+  - [x] Custom activity detection
+  - [x] Competing activity detection
+  - [x] Activity history tracking
+  - [x] Cooldown management
+- [ ] Content delivery system
+  - [ ] Content provider interface
+  - [ ] Content history tracking
+  - [ ] Error handling and retries
+- [ ] System monitoring and metrics
+  - [ ] Worker health checks
+  - [ ] Performance metrics
+  - [ ] Error reporting
+
+### Phase 2: Authentication and Account Management
+
+- User authentication system with JWT
+- Role-based access control
+- Secure token storage
+- Account management endpoints
+- Client status monitoring
+
+### Phase 3: Frontend Development
+
+- React application with Vite
+- Authentication UI
+- Account management dashboard
+- Configuration interfaces
+- Admin dashboard with system statistics
+
+### Phase 4: Content Service Abstraction
+
+- Plugin-based content providers
+- Extended content types support
+- Content search optimization
+- Content preference system
+- Content delivery tracking
+
+### Phase 5: Real-time Communication
+
+- Socket.io integration
+- Live status updates
+- Real-time notifications
+- Activity feed
+- System metrics streaming
+
+### Phase 6: Admin Features and Optimization
+
+- Advanced admin dashboard
+- User management features
+- Performance monitoring tools
+- System optimization
+- Advanced content filtering
+
+## Development Timeline & Integration
+
+The complete project is estimated to take **105-138 developer days** to implement:
+
+- Phase 1: 15-20 days
+- Phase 2: 18-25 days
+- Phase 3: 20-25 days
+- Phase 4: 16-22 days
+- Phase 5: 16-21 days
+- Phase 6: 20-25 days
+
+### Integration Points
+
+The phases are designed to build upon each other:
+
+1. **Phase 1 → Phase 2**: Basic API endpoints are enhanced with authentication and access control.
+
+2. **Phase 2 → Phase 3**: Authentication and account management APIs are consumed by the frontend.
+
+3. **Phase 3 → Phase 4**: Frontend components are enhanced to support the content abstraction system.
+
+4. **Phase 4 → Phase 5**: Content delivery system is enhanced with real-time notifications.
+
+5. **Phase 5 → Phase 6**: Real-time infrastructure is leveraged for admin features and monitoring.
+
+### Key Technical Challenges
+
+1. **Worker Thread Management**:
+
+   - Reliable communication between threads
+   - Crash handling and recovery
+   - Clean shutdown procedures
+
+2. **Discord Token Security**:
+
+   - Secure storage and encryption
+   - Safe token handling
+   - Access control and auditing
+
+3. **Stateful Connections**:
+
+   - Managing multiple Discord connections
+   - Resource allocation
+   - Connection recovery
+
+4. **Real-time Updates**:
+
+   - Efficient Socket.io implementation
+   - State synchronization
+   - Event handling at scale
+
+5. **Content Provider Architecture**:
+   - Plugin system design
+   - Content type abstraction
+   - Delivery optimization
+
+## System Architecture
+
+The application follows a multi-service architecture:
+
+```
+┌─────────────────────────────────────────────────┐
+│            Server (Backend)                     │
+│                                                 │
+│  ┌─────────┐  ┌──────────┐  ┌────────┐          │
+│  │ Account │  │ Content  │  │ Auth   │          │
+│  │ Service │  │ Service  │  │ Service│          │
+│  └─────────┘  └──────────┘  └────────┘          │
+│                                                 │
+│  ┌─────────┐  ┌──────────────────────┐          │
+│  │ Metrics │  │ System Monitor       │          │
+│  │ Service │  │ Service              │          │
+│  └─────────┘  └──────────────────────┘          │
+│                                                 │
+│  ┌─────────────────────────────────────────┐    │
+│  │          Worker Thread Manager          │    │
+│  │                                         │    │
+│  │  ┌─────────────────────────────────┐    │    │
+│  │  │        Discord Clients          │    │    │
+│  │  │  ┌─────┐  ┌─────┐  ┌─────┐      │    │    │
+│  │  │  │Bot 1│  │Bot 2│  │Bot 3│  ... │    │    │
+│  │  │  └─────┘  └─────┘  └─────┘      │    │    │
+│  │  └─────────────────────────────────┘    │    │
+│  └─────────────────────────────────────────┘    │
+└─────────────────────┬───────────────────────────┘
+                      │
+                      ▼
+                 ┌─────────┐
+                 │MongoDB  │
+                 └─────────┘
+```
 
 ## Prerequisites
 
 - Node.js (v16+)
+- MongoDB (v4.4+)
 - npm or yarn
-- Discord account token
-- SerpApi API key (for Google image search)
+- Discord account tokens
+- SerpApi API key (for content search)
 
 ## Configuration
 
-The application can be configured using environment variables in a `.env` file. Here's an example configuration:
+The application can be configured using environment variables in a `.env` file:
 
 ```env
-# Discord authentication
-DISCORD_TOKEN=your_discord_token_here
+# MongoDB connection
+MONGODB_URI=mongodb://localhost:27017/discord-auto-meme
 
 # SerpApi (Google Search API) credentials
-SERPAPI_API_KEY=your_serpapi_key_here
+SERP_API_KEY=your_serpapi_key_here
 
-# Configuration
-MEME_COUNT=5
-CHECK_INTERVAL_MINUTES=15
-SEND_MEMES=true
-# For multiple users, separate with commas
-TARGET_USER_IDS=123456789012345678,234567890123456789
-LANGUAGE=en
+# Discord tokens (for multiple accounts)
+DISCORD_TOKEN_1=your_first_discord_token
+DISCORD_TOKEN_2=your_second_discord_token
+# Add more tokens as needed...
+
+# System configuration
+NODE_ENV=development
+LOG_LEVEL=info
 ```
 
-## Environment Variables
+## API Endpoints
 
-- `DISCORD_TOKEN`: Your Discord account token
-- `SERPAPI_API_KEY`: API key for SerpApi (used for meme search)
-- `MEME_COUNT`: Number of memes to send per message (default: 5)
-- `CHECK_INTERVAL_MINUTES`: How often to check friends' status in minutes (default: 15)
-- `SEND_MEMES`: Whether to actually send messages or just run in test mode (default: true)
-- `TARGET_USER_IDS`: Specific Discord user IDs to target, comma-separated (leave empty to target all friends)
-- `LANGUAGE`: Application language code (en, pt)
+### Discord Accounts
 
-## Setup
+- **GET /accounts**: List all Discord accounts
+- **GET /accounts/{id}**: Get specific account details
+- **POST /accounts**: Add a new Discord account
+- **PATCH /accounts/{id}**: Update account settings
+- **DELETE /accounts/{id}**: Remove an account
+- **POST /accounts/{id}/start**: Start a Discord client
+- **POST /accounts/{id}/stop**: Stop a Discord client
 
-1. Clone this repository
+### Health & Status
+
+- **GET /health**: Basic health check
+- **GET /health/status**: Detailed system status including:
+  - System uptime
+  - Current timestamp
+  - Worker counts (total and active)
+  - Memory usage metrics
+
+### Content
+
+- **POST /content/search**: Search for content based on activity
+- **GET /content/history/{friendId}**: Get content history for a friend
+- **PATCH /content/history/{friendId}/delivered**: Update delivery status
+
+### Authentication (Phase 2)
+
+- **POST /auth/register**: Register a new user
+- **POST /auth/login**: Authenticate user
+
+## Testing Tools
+
+The application includes comprehensive testing tools:
+
+### Demo Script
+
+Run a demonstration of core functionality:
+
+```bash
+npm run ts-node src/demo.ts
+```
+
+The demo:
+
+- Creates test Discord accounts
+- Starts Discord clients
+- Monitors worker status
+- Tests content search
+- Collects system metrics
+
+### Load Testing
+
+Test system stability and performance:
+
+```bash
+npm run ts-node src/loadTest.ts
+```
+
+The load test:
+
+- Runs multiple concurrent Discord clients
+- Monitors memory and CPU usage
+- Performs periodic content searches
+- Tracks error rates
+- Generates performance metrics
+
+Configure load test parameters in `loadTest.ts`:
+
+```typescript
+const NUM_ACCOUNTS = 5; // Number of concurrent clients
+const NUM_FRIENDS_PER_ACCOUNT = 3; // Friends per account
+const TEST_DURATION_MS = 5 * 60000; // Test duration (5 minutes)
+const METRICS_INTERVAL_MS = 10000; // Metrics collection interval
+```
+
+## Development
+
+### Setup
+
+1. Clone the repository
 2. Install dependencies:
-   ```
+   ```bash
+   cd server
    npm install
    ```
-3. Copy the `.env.example` file to `.env`:
-   ```
-   cp .env.example .env
-   ```
-4. Edit the `.env` file with your credentials:
-   - `DISCORD_TOKEN`: Your Discord account token
-   - `SERPAPI_API_KEY`: Your SerpApi API key for Google search
-   - `MEME_COUNT`: Number of memes to send (default: 5)
-   - `CHECK_INTERVAL_MINUTES`: How often to check for gaming activity (default: 15 minutes)
-   - `SEND_MEMES`: Toggle for actually sending messages (set to "false" for testing)
-   - `TARGET_USER_IDS`: Specific Discord user IDs to target, comma-separated (leave empty to target all friends)
-   - `LANGUAGE`: Default application language (en, pt)
-
-## Testing Mode
-
-The application includes a test mode that allows you to validate all functionality without actually sending messages to your friends. To use test mode:
-
-1. Set `SEND_MEMES=false` in your `.env` file
-2. Run the application normally
-3. The application will detect games and find memes but will only log what it would have sent rather than actually sending messages
-4. Once you're satisfied with the behavior, set `SEND_MEMES=true` to enable actual message sending
-
-## Targeting Specific Friends
-
-If you want to test with or only send memes to specific friends:
-
-1. Find your friends' Discord user IDs (right-click their username and select "Copy ID" if you have Developer Mode enabled)
-2. Set `TARGET_USER_IDS=` in your `.env` file with comma-separated IDs:
-   ```
-   TARGET_USER_IDS=123456789012345678,234567890123456789
-   ```
-3. The application will only check for and send memes to those specific friends
-4. To target all friends again, simply remove the value or leave it empty
-
-## Real-time Activity Detection
-
-The application has two methods for detecting when friends are playing games or listening to music:
-
-1. **Event-based Detection**: Automatically detects when a friend starts playing a game or listening to music through Discord's presence update events. This happens in real-time and triggers immediate meme sending.
-
-2. **Periodic Polling**: Checks all friends' status at regular intervals (defined by `CHECK_INTERVAL_MINUTES`). This serves as a backup to ensure no activity is missed.
-
-### Checking Current Activities Without Waiting
-
-When the application starts, it immediately performs an initial check of all friends' statuses to detect anyone currently playing games or listening to music. This means you don't have to wait for a friend to change their status - the application will find friends who are already active and send memes right away.
-
-If you want to force an immediate check of all friends' current activities:
-
-1. Restart the application - it will automatically do an initial check of all friends
-2. Reduce `CHECK_INTERVAL_MINUTES` to a lower value (e.g., 1-5 minutes) for more frequent checks
-
-The application uses several methods to find friends' presence information, including:
-
-- Direct user presence data
-- Shared guild member presence
-- Guild presence cache
-- Active fetching of member data from shared servers
-
-This multi-layered approach ensures the application can detect friends' activities even when Discord's presence system doesn't immediately report all status changes.
-
-### Music Player Detection
-
-The application can detect when your friends are listening to music through Discord's rich presence integration. This works with any music player that integrates with Discord, including:
-
-- Spotify
-- Apple Music
-- YouTube Music
-- Amazon Music
-- And any other music service that shows up in Discord presence
-
-When a friend is listening to music:
-
-1. The app detects the artist they're listening to
-2. Searches for memes related to that artist
-3. Sends personalized messages with music-themed greetings and closings
-
-This feature works just like the game detection but is specifically tailored for music listening activities.
-
-### Troubleshooting Presence Detection
-
-If you're experiencing issues with the direct user presence method not working, this is likely due to Discord's recent API changes and restrictions. Discord has been actively limiting presence data accessibility, especially for user accounts (self-bots).
-
-To optimize presence detection:
-
-1. **Ensure Shared Servers**: Make sure you share at least one server/guild with the friends you want to track. The shared guild method is generally more reliable than direct presence detection.
-
-2. **Wait for Initial Connection**: When first starting the application, it may take a minute or two for the Discord client to properly establish connections and populate the presence cache.
-
-3. **Check Privacy Settings**: Ask your friends to verify their privacy settings allow activity status to be visible.
-
-## Language Support
-
-The application supports multiple languages. Currently included:
-
-- English (en): Default language
-- Portuguese (pt): Portuguese translations
-
-You can select a language in two ways:
-
-1. **Interactive Selection**: When starting the application, you'll be prompted to select a language:
-
-   ```
-   === Language Selection / Seleção de Idioma ===
-   Available languages / Idiomas disponíveis:
-   1. English
-   2. Português
-
-   Select a language (1-2) [default: en]:
+3. Create `.env` file with required configuration
+4. Start MongoDB
+5. Run in development mode:
+   ```bash
+   npm run dev
    ```
 
-2. **Environment Variable**: Set `LANGUAGE=pt` (or another supported language code) in your `.env` file
+### Testing
 
-To add a new language:
+Run unit tests:
 
-1. Create a new folder in `src/locales/` with your language code (e.g., `fr` for French)
-2. Copy and translate the JSON files from an existing language folder
-3. The new language will be automatically detected and available for selection at startup
-
-## Getting Required API Keys
-
-### How to Get Your Discord Token
-
-⚠️ **WARNING: Sharing your token gives others full access to your account. Never share it with anyone!** ⚠️
-
-There are multiple ways to get your Discord token:
-
-#### Method 1: Using Browser Developer Tools
-
-1. Open Discord in your browser (discord.com/app)
-2. Press F12 or Right-click and select "Inspect" to open Developer Tools
-3. Go to the Network tab
-4. Click on any API request (like /api/v9/users/@me)
-5. Find the "authorization" header in the request headers
-6. That value is your token
-
-#### Method 2: Using Browser Console
-
-1. Open Discord in your browser
-2. Press F12 to open Developer Tools
-3. Navigate to the Console tab
-4. Paste the following code and press Enter:
-   ```javascript
-   (webpackChunkdiscord_app.push([
-     [""],
-     {},
-     (e) => {
-       m = [];
-       for (let c in e.c) m.push(e.c[c]);
-     },
-   ]),
-   m)
-     .find((m) => m?.exports?.default?.getToken !== void 0)
-     .exports.default.getToken();
-   ```
-5. Copy the token that appears (without quotes)
-
-#### Method 3: From Discord Desktop Client
-
-1. Press Ctrl+Shift+I (Windows/Linux) or Cmd+Option+I (Mac) to open Developer Tools
-2. Go to the Network tab and refresh (F5)
-3. Type "api" in the filter box
-4. Look for requests to Discord's API
-5. Find the "authorization" header in any request
-6. Copy the token value
-
-**Note**: Discord frequently updates its client which may cause some methods to stop working. If one method fails, try another.
-
-**Important Security Warning**: Using your Discord token in third-party applications is against Discord's Terms of Service and can compromise your account security. This project is for educational purposes only.
-
-### How to Get Your SerpApi Key
-
-1. Go to [SerpApi's website](https://serpapi.com/)
-2. Sign up for a free account
-3. After signing in, navigate to your dashboard
-4. Find your API key in the dashboard (usually displayed prominently)
-5. You get 100 free searches per month, which should be enough for testing
-
-## Running the Application
-
-Development mode:
-
-```
-npm run dev
+```bash
+npm test
 ```
 
-Production mode:
+Run integration tests:
 
+```bash
+npm run test:integration
 ```
-npm run build
-npm start
-```
 
-## Code Quality
+### Code Quality
 
-The project uses ESLint to enforce code quality and consistency. ESLint is configured to check TypeScript files for common issues and style violations.
+Check for linting issues:
 
-### Running ESLint
-
-To check your code for issues:
-
-```
+```bash
 npm run lint
 ```
 
-To automatically fix issues that can be fixed:
+Fix automatic linting issues:
 
-```
+```bash
 npm run lint:fix
 ```
 
-### ESLint Configuration
+## Known Limitations
 
-The ESLint configuration is stored in `.eslintrc.json` and includes:
+1. **Discord API Restrictions**:
 
-- TypeScript-specific rules
-- Code style rules (indentation, quotes, semicolons, etc.)
-- Error prevention rules
+   - Limited presence data accessibility
+   - Rate limiting on API calls
+   - Token security considerations
 
-If you want to ignore specific files or directories from linting, add them to `.eslintignore`.
+2. **System Resources**:
+
+   - Each Discord client requires a separate worker thread
+   - Memory usage scales with number of active clients
+   - Recommended maximum of 10 concurrent clients per instance
+
+3. **Content Search**:
+   - SerpApi free tier limited to 100 searches/month
+   - Content relevance depends on search query quality
+   - Some content may be inappropriate or irrelevant
+
+## Security Considerations
+
+1. **Discord Tokens**:
+
+   - Stored encrypted in database
+   - Decrypted only in memory when needed
+   - Never logged or exposed in API responses
+
+2. **API Security**:
+   - Rate limiting on all endpoints
+   - Input validation and sanitization
+   - Error messages don't expose sensitive information
+
+## Future Enhancements (Phase 2+)
+
+1. **User Authentication**:
+
+   - JWT-based authentication
+   - Role-based access control
+   - User management interface
+
+2. **Content Providers**:
+
+   - Plugin system for different content sources
+   - Content filtering and moderation
+   - User feedback and rating system
+
+3. **Monitoring**:
+   - Advanced metrics dashboard
+   - Alert system for issues
+   - Performance optimization tools
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
