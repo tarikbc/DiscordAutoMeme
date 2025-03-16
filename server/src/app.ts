@@ -6,6 +6,9 @@ import mongoose from "mongoose";
 import logger from "./utils/logger";
 import { DiscordAccountService } from "./services/DiscordAccountService";
 import apiRoutes from "./api/routes";
+import healthRouter from "./api/routes/health";
+import swaggerSetup from "./api/swagger";
+import { errorHandler } from "./api/middleware/errorHandler";
 
 // Create Express app
 const app = express();
@@ -20,25 +23,15 @@ app.use(
   }),
 );
 
+// Setup Swagger
+swaggerSetup(app);
+
 // Routes
 app.use("/api", apiRoutes);
-
-// Health check endpoint
-app.get("/health", (req: express.Request, res: express.Response) => {
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use("/health", healthRouter);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response) => {
-  logger.error("Unhandled error:", err);
-  res.status(500).json({
-    error: "Internal server error",
-    details: process.env.NODE_ENV === "development" ? err.message : undefined,
-  });
-});
+app.use(errorHandler);
 
 // Initialize database and worker manager
 async function initialize() {

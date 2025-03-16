@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { User } from "../models/User";
 import { DiscordAccount } from "../models/DiscordAccount";
 import { Friend } from "../models/Friend";
@@ -9,6 +9,9 @@ import { encryptToken } from "../utils/encryption";
 import { ContentService } from "../services/ContentService";
 import config from "../config";
 import logger from "../utils/logger";
+import { seedPermissions } from "../models/Permission";
+import { seedRoles } from "../models/Role";
+import bcrypt from "bcrypt";
 
 const seedDatabase = async () => {
   try {
@@ -27,11 +30,16 @@ const seedDatabase = async () => {
     ]);
     logger.info("Cleared existing data");
 
+    // Seed permissions and roles first
+    logger.info("Seeding permissions and roles...");
+    await seedPermissions();
+    const roleIds = await seedRoles();
+    logger.info("Seeded permissions and roles successfully");
+
     // Create test user
     const user = await User.create({
       email: "test@example.com",
       passwordHash: "placeholder-for-phase-2", // Will be properly hashed in Phase 2
-      role: "user",
       setupCompleted: true,
       settings: {
         theme: "light",
@@ -41,6 +49,16 @@ const seedDatabase = async () => {
         },
       },
     });
+
+    // Assign roles to user with proper type checking
+    if (roleIds.has("USER")) {
+      const userRoleId = roleIds.get("USER");
+      if (userRoleId) {
+        user.roles = [userRoleId];
+        await user.save();
+      }
+    }
+
     logger.info("Created test user");
 
     // Create test Discord account
@@ -242,7 +260,7 @@ const seedDatabase = async () => {
     ]);
     logger.info("Created test activity history");
 
-    // Create test content history using ContentService
+    // Create test content history
     const contentService = ContentService.getInstance();
 
     // Search and store content for each friend based on their activities
@@ -318,6 +336,12 @@ const seedDatabase = async () => {
     });
     logger.info("Created test system metrics");
 
+    // Create admin user with admin role
+    await createAdminUser(roleIds.has("ADMIN") ? roleIds.get("ADMIN") : undefined);
+
+    // Also create a regular user
+    await createRegularUser(roleIds.has("USER") ? roleIds.get("USER") : undefined);
+
     logger.info("Database seeding completed successfully");
   } catch (error) {
     logger.error("Error seeding database:", error);
@@ -328,7 +352,69 @@ const seedDatabase = async () => {
   }
 };
 
-// Run the seed function
+// Create admin user
+async function createAdminUser(adminRoleId?: Types.ObjectId) {
+  try {
+    // Check if admin user already exists
+    const User = mongoose.model("User");
+    const existingAdmin = await User.findOne({ email: "admin@example.com" });
+
+    if (existingAdmin) {
+      logger.info("Admin user already exists, skipping creation");
+      return;
+    }
+
+    // Create admin user with hashed password
+    const passwordHash = await bcrypt.hash("adminPassword123", 10);
+    const admin = await User.create({
+      email: "admin@example.com",
+      passwordHash,
+    });
+
+    logger.info(`Created admin user with ID: ${admin._id}`);
+
+    // Assign admin role to user
+    if (adminRoleId) {
+      admin.roles = [adminRoleId];
+      await admin.save();
+    }
+  } catch (error) {
+    logger.error("Failed to create admin user:", error);
+  }
+}
+
+// Create a regular user
+async function createRegularUser(userRoleId?: Types.ObjectId) {
+  try {
+    // Check if user already exists
+    const User = mongoose.model("User");
+    const existingUser = await User.findOne({ email: "user@example.com" });
+
+    if (existingUser) {
+      logger.info("Regular user already exists, skipping creation");
+      return;
+    }
+
+    // Create regular user with hashed password
+    const passwordHash = await bcrypt.hash("userPassword123", 10);
+    const user = await User.create({
+      email: "user@example.com",
+      passwordHash,
+    });
+
+    logger.info(`Created regular user with ID: ${user._id}`);
+
+    // Assign user role
+    if (userRoleId) {
+      user.roles = [userRoleId];
+      await user.save();
+    }
+  } catch (error) {
+    logger.error("Failed to create regular user:", error);
+  }
+}
+
+// Connect to MongoDB and seed the database
 seedDatabase().catch(error => {
   logger.error("Failed to seed database:", error);
   process.exit(1);

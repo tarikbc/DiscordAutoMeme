@@ -1,8 +1,12 @@
-import { ActivityType } from "discord.js-selfbot-v13";
 import { IDiscordAccountSettings } from "@/models/DiscordAccount";
 
+/**
+ * Activity types for Discord presence
+ */
+export type ActivityType = "GAME" | "MUSIC" | "STREAMING" | "WATCHING" | "CUSTOM" | "COMPETING";
+
 export interface ActivityState {
-  type: "GAME" | "MUSIC" | "STREAMING" | "WATCHING" | "CUSTOM" | "COMPETING";
+  type: ActivityType;
   details: {
     gameName?: string;
     musicDetails?: {

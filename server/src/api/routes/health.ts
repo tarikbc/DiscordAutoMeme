@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { WorkerManager } from "../../workers/WorkerManager";
 
 const router = Router();
@@ -8,11 +8,11 @@ const workerManager = WorkerManager.getInstance();
  * @swagger
  * /health:
  *   get:
- *     summary: Basic health check
- *     tags: [Health]
+ *     summary: Health check endpoint
+ *     description: Simple health check to verify API is running
  *     responses:
  *       200:
- *         description: Service is healthy
+ *         description: API is healthy
  *         content:
  *           application/json:
  *             schema:
@@ -21,9 +21,15 @@ const workerManager = WorkerManager.getInstance();
  *                 status:
  *                   type: string
  *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
-router.get("/", (req, res) => {
-  res.json({ status: "ok" });
+router.get("/", (_req: Request, res: Response) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 /**

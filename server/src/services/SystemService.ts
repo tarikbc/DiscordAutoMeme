@@ -5,7 +5,7 @@ import { WorkerManager } from "../workers/WorkerManager";
 import { DiscordAccount } from "../models/DiscordAccount";
 import logger from "../utils/logger";
 
-interface WorkerStatus {
+export interface WorkerStatus {
   accountId: string;
   isConnected: boolean;
   hasError: boolean;
@@ -17,12 +17,20 @@ interface WorkerStatus {
 }
 
 export class SystemService {
+  private static instance: SystemService;
   private workerManager: WorkerManager;
   private metricsInterval: NodeJS.Timeout | null = null;
   private readonly METRICS_COLLECTION_INTERVAL = 60000; // 1 minute
 
-  constructor(workerManager: WorkerManager) {
-    this.workerManager = workerManager;
+  private constructor() {
+    this.workerManager = WorkerManager.getInstance();
+  }
+
+  public static getInstance(): SystemService {
+    if (!SystemService.instance) {
+      SystemService.instance = new SystemService();
+    }
+    return SystemService.instance;
   }
 
   /**
@@ -153,6 +161,13 @@ export class SystemService {
    */
   getWorkerStatus(accountId: Types.ObjectId): WorkerStatus | null {
     return this.workerManager.getWorkerStatus(accountId.toString());
+  }
+
+  /**
+   * Alias for getWorkerStatus (for backward compatibility)
+   */
+  getAccountStatus(accountId: Types.ObjectId): WorkerStatus | null {
+    return this.getWorkerStatus(accountId);
   }
 
   /**

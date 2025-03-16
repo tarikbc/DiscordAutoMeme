@@ -1,9 +1,54 @@
 import dotenv from "dotenv";
 import path from "path";
 import { ActivityType } from "../types/worker";
+import ms from "ms";
 
 // Load environment variables
 dotenv.config();
+
+type Config = {
+  env: string;
+  port: number;
+  mongodb: {
+    uri: string;
+  };
+  encryption: {
+    key: string;
+    algorithm: string;
+  };
+  logging: {
+    level: string;
+    directory: string;
+  };
+  discord: {
+    defaultSettings: {
+      autoReconnect: boolean;
+      statusUpdateInterval: number;
+      activityTypes: ActivityType[];
+    };
+  };
+  api: {
+    rateLimits: {
+      windowMs: number;
+      max: number;
+    };
+    accountCreation: {
+      windowMs: number;
+      max: number;
+    };
+  };
+  jwt: {
+    secret: string;
+    refreshSecret: string;
+    expiresIn: ms.StringValue;
+    refreshExpiresIn: ms.StringValue;
+  };
+  security: {
+    maxLoginAttempts: number;
+    lockoutTime: number;
+    passwordResetExpires: number;
+  };
+};
 
 const config = {
   env: process.env.NODE_ENV || "development",
@@ -47,6 +92,17 @@ const config = {
       max: 5, // limit each IP to 5 account creations per hour
     },
   },
-} as const;
+  jwt: {
+    secret: process.env.JWT_SECRET || "development-jwt-secret-key-change-in-production",
+    refreshSecret: process.env.JWT_REFRESH_SECRET || "refresh-secret-key-change-in-production",
+    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+  },
+  security: {
+    maxLoginAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS || "5", 10),
+    lockoutTime: parseInt(process.env.ACCOUNT_LOCKOUT_MINUTES || "15", 10), // in minutes
+    passwordResetExpires: parseInt(process.env.PASSWORD_RESET_EXPIRES || "1", 10), // in hours
+  },
+} as Config;
 
 export default config;

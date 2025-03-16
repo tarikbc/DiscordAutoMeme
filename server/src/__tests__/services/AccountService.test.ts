@@ -31,12 +31,11 @@ describe("AccountService", () => {
       const user = await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       });
 
       expect(user).toBeDefined();
       expect(user.email).toBe("test@example.com");
-      expect(user.role).toBe("user");
+      expect(user.roles).toEqual([]);
       expect(user.setupCompleted).toBe(false);
     });
 
@@ -44,14 +43,12 @@ describe("AccountService", () => {
       await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       });
 
       await expect(
         accountService.createUser({
           email: "test@example.com",
           passwordHash: "another_password",
-          role: "user",
         }),
       ).rejects.toThrow("Email already in use");
     });
@@ -60,7 +57,6 @@ describe("AccountService", () => {
       const created = (await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       })) as UserDocument;
 
       const user = await accountService.getUserById(created._id);
@@ -72,7 +68,6 @@ describe("AccountService", () => {
       const created = (await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       })) as UserDocument;
 
       const updated = await accountService.updateUser(created._id, {
@@ -87,7 +82,6 @@ describe("AccountService", () => {
       const created = (await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       })) as UserDocument;
 
       const updated = await accountService.completeSetup(created._id);
@@ -103,7 +97,6 @@ describe("AccountService", () => {
       user = (await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       })) as UserDocument;
     });
 
@@ -188,7 +181,6 @@ describe("AccountService", () => {
       user = await accountService.createUser({
         email: "test@example.com",
         passwordHash: "hashed_password",
-        role: "user",
       });
 
       await accountService.addDiscordAccount(user._id, "Test Account", "test_token");

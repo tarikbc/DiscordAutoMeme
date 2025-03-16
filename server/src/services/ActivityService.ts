@@ -154,6 +154,18 @@ export class ActivityService {
     }
   }
 
+  public getRecentActivityByAccountIds(
+    accountIds: Types.ObjectId[],
+    limit: number = 10,
+  ): Promise<IActivityHistory[]> {
+    return ActivityHistory.find({
+      discordAccountId: { $in: accountIds },
+      processed: true,
+    })
+      .sort({ timestamp: -1 })
+      .limit(limit);
+  }
+
   // Helper method to clean up old cooldowns
   private cleanupCooldowns(): void {
     const now = new Date().getTime();

@@ -144,12 +144,8 @@ const discordAccountSchema = new Schema<IDiscordAccountModel>(
         default: null,
       },
       currentActivity: {
-        type: {
-          type: String,
-          name: String,
-          details: String,
-        },
-        default: null,
+        type: Schema.Types.Mixed,
+        default: undefined,
       },
     },
     metrics: {

@@ -5,11 +5,12 @@ import { WorkerManager } from "../workers/WorkerManager";
 import logger from "../utils/logger";
 import config from "../config";
 import { User, IUser } from "../models/User";
+import { Role } from "../models/Role";
 
 export interface CreateUserInput {
   email: string;
   passwordHash: string;
-  role?: "user" | "admin";
+  roleIds?: Types.ObjectId[];
 }
 
 export interface UpdateUserInput {
@@ -48,7 +49,7 @@ export class AccountService {
       const user = await User.create({
         email: input.email,
         passwordHash: input.passwordHash,
-        role: input.role || "user",
+        roles: input.roleIds || [],
         setupCompleted: false,
         discordAccountsCount: 0,
         settings: {
@@ -190,13 +191,13 @@ export class AccountService {
   async getAllUsers(
     page = 1,
     limit = 10,
-    filter?: { role?: string; setupCompleted?: boolean },
+    filter?: { roleIds?: Types.ObjectId[]; setupCompleted?: boolean },
   ): Promise<{ users: IUser[]; total: number }> {
     try {
       const query: any = {};
 
-      if (filter?.role) {
-        query.role = filter.role;
+      if (filter?.roleIds) {
+        query.roles = { $in: filter.roleIds };
       }
 
       if (filter?.setupCompleted !== undefined) {
@@ -220,31 +221,22 @@ export class AccountService {
   }
 
   /**
-   * Get user statistics (admin only)
+   * Get user statistics
    */
-  async getUserStats(): Promise<{
-    total: number;
-    active: number;
-    setupCompleted: number;
-    withDiscordAccounts: number;
-  }> {
+  async getUserStatistics(): Promise<any> {
     try {
-      const [total, active, setupCompleted, withDiscordAccounts] = await Promise.all([
-        User.countDocuments().exec(),
-        User.countDocuments({
-          lastLogin: {
-            $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          },
-        }).exec(),
-        User.countDocuments({ setupCompleted: true }).exec(),
-        User.countDocuments({ discordAccountsCount: { $gt: 0 } }).exec(),
-      ]);
+      const totalUsers = await User.countDocuments();
+      const activeUsers = await User.countDocuments({
+        lastLogin: { $gt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      });
+      const newUsers = await User.countDocuments({
+        createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      });
 
       return {
-        total,
-        active,
-        setupCompleted,
-        withDiscordAccounts,
+        totalUsers,
+        activeUsers,
+        newUsers,
       };
     } catch (error) {
       logger.error("Error getting user statistics:", error);
@@ -253,23 +245,32 @@ export class AccountService {
   }
 
   /**
-   * Change user role (admin only)
+   * Assign roles to user (admin only)
    */
-  async changeUserRole(userId: Types.ObjectId, newRole: "user" | "admin"): Promise<IUser | null> {
+  async assignUserRoles(userId: Types.ObjectId, roleIds: Types.ObjectId[]): Promise<IUser | null> {
     try {
+      // Validate roles
+      const validRoles = await Role.find({
+        _id: { $in: roleIds },
+      });
+
+      if (validRoles.length !== roleIds.length) {
+        throw new Error("One or more role IDs are invalid");
+      }
+
       const user = await User.findByIdAndUpdate(
         userId,
-        { $set: { role: newRole } },
+        { $set: { roles: roleIds } },
         { new: true },
       ).exec();
 
       if (user) {
-        logger.info(`Changed role for user ${userId} to ${newRole}`);
+        logger.info(`Assigned roles for user ${userId}: ${roleIds.join(", ")}`);
       }
 
       return user;
     } catch (error) {
-      logger.error(`Error changing role for user ${userId}:`, error);
+      logger.error(`Error assigning roles for user ${userId}:`, error);
       throw error;
     }
   }

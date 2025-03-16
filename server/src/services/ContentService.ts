@@ -38,6 +38,14 @@ interface ContentResult {
   type: string;
 }
 
+// Define the IContentStats interface
+export interface IContentStats {
+  total: number;
+  byType: { [key: string]: number };
+  dailyStats: Array<{ date: string; count: number; byType: { [key: string]: number } }>;
+  accountStats: Array<{ accountId: string; count: number; byType: { [key: string]: number } }>;
+}
+
 export class ContentService {
   private static instance: ContentService;
   private searchClient: any;
@@ -496,5 +504,116 @@ export class ContentService {
     const history = new ContentHistory(data);
     await history.save();
     return history;
+  }
+
+  public async getContentStatsByAccountIds(
+    accountIds: Types.ObjectId[],
+    days: number = 7,
+  ): Promise<IContentStats> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get content delivery by account and type
+    const accountTypeStats = await ContentHistory.aggregate([
+      {
+        $match: {
+          discordAccountId: { $in: accountIds },
+          sentAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            accountId: "$discordAccountId",
+            triggerType: "$triggerType",
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get content delivery by date
+    const dailyStats = await ContentHistory.aggregate([
+      {
+        $match: {
+          discordAccountId: { $in: accountIds },
+          sentAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            date: { $dateToString: { format: "%Y-%m-%d", date: "$sentAt" } },
+            triggerType: "$triggerType",
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Process the results into the required format
+    const result: IContentStats = {
+      total: 0,
+      byType: {},
+      dailyStats: [],
+      accountStats: [],
+    };
+
+    // Process account stats
+    const accountMap = new Map<string, { count: number; byType: { [key: string]: number } }>();
+    accountTypeStats.forEach((stat: any) => {
+      const accountId = stat._id.accountId.toString();
+      const type = stat._id.triggerType;
+      const count = stat.count;
+
+      if (!accountMap.has(accountId)) {
+        accountMap.set(accountId, { count: 0, byType: {} });
+      }
+
+      const accountData = accountMap.get(accountId)!;
+      accountData.count += count;
+      accountData.byType[type] = (accountData.byType[type] || 0) + count;
+
+      // Update total counts
+      result.total += count;
+      result.byType[type] = (result.byType[type] || 0) + count;
+    });
+
+    // Convert account map to array
+    accountMap.forEach((data, accountId) => {
+      result.accountStats.push({
+        accountId,
+        count: data.count,
+        byType: data.byType,
+      });
+    });
+
+    // Process daily stats
+    const dailyMap = new Map<string, { count: number; byType: { [key: string]: number } }>();
+    dailyStats.forEach((stat: any) => {
+      const date = stat._id.date;
+      const type = stat._id.triggerType;
+      const count = stat.count;
+
+      if (!dailyMap.has(date)) {
+        dailyMap.set(date, { count: 0, byType: {} });
+      }
+
+      const dayData = dailyMap.get(date)!;
+      dayData.count += count;
+      dayData.byType[type] = (dayData.byType[type] || 0) + count;
+    });
+
+    // Convert daily map to array and sort by date
+    dailyMap.forEach((data, date) => {
+      result.dailyStats.push({
+        date,
+        count: data.count,
+        byType: data.byType,
+      });
+    });
+    result.dailyStats.sort((a, b) => a.date.localeCompare(b.date));
+
+    return result;
   }
 }

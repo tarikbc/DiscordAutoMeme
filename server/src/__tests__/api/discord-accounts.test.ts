@@ -18,7 +18,7 @@ describe("Discord Account API", () => {
     mockUser = await User.create({
       email: "test@example.com",
       passwordHash: "hashed_password",
-      role: "user",
+      roles: [],
     });
 
     // Create test Discord account
