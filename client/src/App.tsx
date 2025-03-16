@@ -16,6 +16,7 @@ import { AccountsPage, AccountForm } from './pages/accounts';
 import { ActivityPage } from './pages/activity';
 import { ContentPage } from './pages/content';
 import { AdminPage } from './pages/admin';
+import { FriendMonitoringPage } from './pages/friends';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -43,6 +44,9 @@ function App() {
 
             {/* Content Routes */}
             <Route path="/content" element={<PrivateRoute component={ContentPage} withLayout={true} />} />
+
+            {/* Friends Routes */}
+            <Route path="/friends" element={<PrivateRoute component={FriendMonitoringPage} withLayout={true} />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<PrivateRoute component={AdminPage} withLayout={true} adminRequired={true} />} />

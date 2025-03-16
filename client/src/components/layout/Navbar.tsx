@@ -19,6 +19,7 @@ const Navbar = () => {
       { name: 'Accounts', href: '/accounts', active: location.pathname.startsWith('/accounts') },
       { name: 'Activity', href: '/activity', active: location.pathname.startsWith('/activity') },
       { name: 'Content', href: '/content', active: location.pathname.startsWith('/content') },
+      { name: 'Friends', href: '/friends', active: location.pathname.startsWith('/friends') },
     ];
 
     if (isAdmin) {
