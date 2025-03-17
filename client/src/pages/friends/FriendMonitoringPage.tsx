@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  FriendListView,
-  FriendDetailView
-} from '../../components/friends';
+import { FriendListView, FriendDetailView } from '../../components/friends';
 import type { TargetingSettingsUpdate } from '../../components/friends';
 
 const FriendMonitoringPage = () => {
@@ -23,7 +20,7 @@ const FriendMonitoringPage = () => {
   };
 
   // Empty handler for backwards compatibility
-  const handleFriendTimelineView = () => { };
+  const handleFriendTimelineView = () => {};
 
   const handleBackToList = () => {
     setSelectedView('list');
@@ -34,7 +31,7 @@ const FriendMonitoringPage = () => {
     // Simulate API call to update settings
     setLoading(true);
 
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       setTimeout(() => {
         setLoading(false);
         // In a real app, we would actually save the settings to the backend
@@ -47,7 +44,9 @@ const FriendMonitoringPage = () => {
   return (
     <div className="container mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Friend Activity Monitoring</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Friend Activity Monitoring
+        </h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Track your friends' activity patterns and optimize content delivery.
         </p>
@@ -75,4 +74,4 @@ const FriendMonitoringPage = () => {
   );
 };
 
-export default FriendMonitoringPage; 
+export default FriendMonitoringPage;

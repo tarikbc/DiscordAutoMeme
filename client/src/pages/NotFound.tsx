@@ -6,9 +6,7 @@ const NotFound = () => {
       <div className="max-w-md w-full space-y-8 text-center">
         <div>
           <h1 className="text-9xl font-extrabold text-blue-600 dark:text-blue-500">404</h1>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
-            Page Not Found
-          </h2>
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">Page Not Found</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Oops! The page you're looking for doesn't exist or has been moved.
           </p>
@@ -26,4 +24,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound; 
+export default NotFound;

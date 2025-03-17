@@ -55,14 +55,14 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
     { type: 'meme', enabled: true, priority: 5, nsfw: false, maxSizeKB: 1024 },
     { type: 'gif', enabled: true, priority: 4, nsfw: false, maxSizeKB: 2048 },
     { type: 'video', enabled: false, priority: 3, nsfw: false, maxSizeKB: 5120 },
-    { type: 'image', enabled: true, priority: 4, nsfw: false, maxSizeKB: 1536 }
+    { type: 'image', enabled: true, priority: 4, nsfw: false, maxSizeKB: 1536 },
   ]);
 
   // Initial delivery settings
   const [deliverySettings, setDeliverySettings] = useState<DeliverySettings>({
     frequency: {
       min: 4, // hours
-      max: 12 // hours
+      max: 12, // hours
     },
     timeWindows: {
       enabled: true,
@@ -74,10 +74,10 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
         { dayOfWeek: 5, startHour: 10, endHour: 23 }, // Friday, 10 AM - 11 PM
         { dayOfWeek: 6, startHour: 12, endHour: 23 }, // Saturday, 12 PM - 11 PM
         { dayOfWeek: 0, startHour: 12, endHour: 22 }, // Sunday, 12 PM - 10 PM
-      ]
+      ],
     },
     contextAware: true,
-    randomizeDelivery: true
+    randomizeDelivery: true,
   });
 
   // Initial content sources
@@ -87,36 +87,36 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
       name: 'Reddit - r/memes',
       url: 'https://www.reddit.com/r/memes',
       enabled: true,
-      contentTypes: ['meme', 'image', 'gif']
+      contentTypes: ['meme', 'image', 'gif'],
     },
     {
       id: 'source-2',
       name: 'Reddit - r/dankmemes',
       url: 'https://www.reddit.com/r/dankmemes',
       enabled: true,
-      contentTypes: ['meme', 'image', 'gif']
+      contentTypes: ['meme', 'image', 'gif'],
     },
     {
       id: 'source-3',
       name: 'Giphy - Trending',
       url: 'https://giphy.com/trending',
       enabled: true,
-      contentTypes: ['gif']
+      contentTypes: ['gif'],
     },
     {
       id: 'source-4',
       name: 'Imgur - Viral',
       url: 'https://imgur.com/viral',
       enabled: false,
-      contentTypes: ['image', 'gif', 'video']
-    }
+      contentTypes: ['image', 'gif', 'video'],
+    },
   ]);
 
   // Add new source form
   const [newSource, setNewSource] = useState({
     name: '',
     url: '',
-    contentTypes: [] as string[]
+    contentTypes: [] as string[],
   });
 
   const toggleContentType = (index: number) => {
@@ -146,7 +146,7 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
   const updateFrequency = (min: number, max: number) => {
     setDeliverySettings({
       ...deliverySettings,
-      frequency: { min, max }
+      frequency: { min, max },
     });
   };
 
@@ -155,30 +155,28 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
       ...deliverySettings,
       timeWindows: {
         ...deliverySettings.timeWindows,
-        enabled: !deliverySettings.timeWindows.enabled
-      }
+        enabled: !deliverySettings.timeWindows.enabled,
+      },
     });
   };
 
   const toggleContextAware = () => {
     setDeliverySettings({
       ...deliverySettings,
-      contextAware: !deliverySettings.contextAware
+      contextAware: !deliverySettings.contextAware,
     });
   };
 
   const toggleRandomizeDelivery = () => {
     setDeliverySettings({
       ...deliverySettings,
-      randomizeDelivery: !deliverySettings.randomizeDelivery
+      randomizeDelivery: !deliverySettings.randomizeDelivery,
     });
   };
 
   const toggleContentSource = (sourceId: string) => {
     const updated = contentSources.map(source =>
-      source.id === sourceId
-        ? { ...source, enabled: !source.enabled }
-        : source
+      source.id === sourceId ? { ...source, enabled: !source.enabled } : source,
     );
     setContentSources(updated);
   };
@@ -187,12 +185,12 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
     if (newSource.contentTypes.includes(type)) {
       setNewSource({
         ...newSource,
-        contentTypes: newSource.contentTypes.filter(t => t !== type)
+        contentTypes: newSource.contentTypes.filter(t => t !== type),
       });
     } else {
       setNewSource({
         ...newSource,
-        contentTypes: [...newSource.contentTypes, type]
+        contentTypes: [...newSource.contentTypes, type],
       });
     }
   };
@@ -207,7 +205,7 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
       name: newSource.name,
       url: newSource.url,
       enabled: true,
-      contentTypes: newSource.contentTypes
+      contentTypes: newSource.contentTypes,
     };
 
     setContentSources([...contentSources, newSourceObj]);
@@ -216,7 +214,7 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
     setNewSource({
       name: '',
       url: '',
-      contentTypes: []
+      contentTypes: [],
     });
   };
 
@@ -233,7 +231,7 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
         accountId,
         contentTypes,
         deliverySettings,
-        contentSources
+        contentSources,
       };
 
       await onSave(settings);
@@ -262,16 +260,43 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
       <div className="p-6 space-y-6">
         {/* Content Type Configuration */}
         <div>
-          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Content Type Configuration</h3>
+          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">
+            Content Type Configuration
+          </h3>
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
               <thead>
                 <tr>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">NSFW</th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Max Size (KB)</th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    Type
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    Priority
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    NSFW
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    Max Size (KB)
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
@@ -283,10 +308,11 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                     <td className="px-3 py-2 whitespace-nowrap text-sm">
                       <button
                         onClick={() => toggleContentType(index)}
-                        className={`px-2 py-1 text-xs font-medium rounded ${type.enabled
-                          ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100'
-                          : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
-                          }`}
+                        className={`px-2 py-1 text-xs font-medium rounded ${
+                          type.enabled
+                            ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
+                        }`}
                       >
                         {type.enabled ? 'Enabled' : 'Disabled'}
                       </button>
@@ -294,21 +320,24 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                     <td className="px-3 py-2 whitespace-nowrap text-sm">
                       <select
                         value={type.priority}
-                        onChange={(e) => updateContentTypePriority(index, parseInt(e.target.value))}
+                        onChange={e => updateContentTypePriority(index, parseInt(e.target.value))}
                         className="rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-xs"
                       >
-                        {[1, 2, 3, 4, 5].map((priority) => (
-                          <option key={priority} value={priority}>{priority}</option>
+                        {[1, 2, 3, 4, 5].map(priority => (
+                          <option key={priority} value={priority}>
+                            {priority}
+                          </option>
                         ))}
                       </select>
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-sm">
                       <button
                         onClick={() => toggleContentTypeNSFW(index)}
-                        className={`px-2 py-1 text-xs font-medium rounded ${type.nsfw
-                          ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100'
-                          : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
-                          }`}
+                        className={`px-2 py-1 text-xs font-medium rounded ${
+                          type.nsfw
+                            ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
+                        }`}
                       >
                         {type.nsfw ? 'Yes' : 'No'}
                       </button>
@@ -317,7 +346,7 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                       <input
                         type="number"
                         value={type.maxSizeKB}
-                        onChange={(e) => updateContentTypeMaxSize(index, parseInt(e.target.value))}
+                        onChange={e => updateContentTypeMaxSize(index, parseInt(e.target.value))}
                         className="w-20 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-xs"
                       />
                     </td>
@@ -330,7 +359,9 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
 
         {/* Delivery Frequency Settings */}
         <div>
-          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Delivery Frequency Settings</h3>
+          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">
+            Delivery Frequency Settings
+          </h3>
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -344,7 +375,9 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                     min="1"
                     max={deliverySettings.frequency.max}
                     value={deliverySettings.frequency.min}
-                    onChange={(e) => updateFrequency(parseInt(e.target.value), deliverySettings.frequency.max)}
+                    onChange={e =>
+                      updateFrequency(parseInt(e.target.value), deliverySettings.frequency.max)
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
                   />
                 </div>
@@ -354,7 +387,9 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                     type="number"
                     min={deliverySettings.frequency.min}
                     value={deliverySettings.frequency.max}
-                    onChange={(e) => updateFrequency(deliverySettings.frequency.min, parseInt(e.target.value))}
+                    onChange={e =>
+                      updateFrequency(deliverySettings.frequency.min, parseInt(e.target.value))
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
                   />
                 </div>
@@ -369,7 +404,10 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                 onChange={toggleTimeWindows}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
               />
-              <label htmlFor="time-windows" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="time-windows"
+                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+              >
                 Enable time windows for delivery
               </label>
             </div>
@@ -380,8 +418,18 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                   Content will only be delivered during these time windows.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, dayIndex) => {
-                    const window = deliverySettings.timeWindows.windows.find(w => w.dayOfWeek === dayIndex);
+                  {[
+                    'Sunday',
+                    'Monday',
+                    'Tuesday',
+                    'Wednesday',
+                    'Thursday',
+                    'Friday',
+                    'Saturday',
+                  ].map((day, dayIndex) => {
+                    const window = deliverySettings.timeWindows.windows.find(
+                      w => w.dayOfWeek === dayIndex,
+                    );
                     return (
                       <div key={day} className="flex items-center space-x-2 text-sm">
                         <span className="w-24 text-gray-700 dark:text-gray-300">{day}:</span>
@@ -408,7 +456,10 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                 onChange={toggleContextAware}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
               />
-              <label htmlFor="context-aware" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="context-aware"
+                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+              >
                 Enable context-aware delivery
               </label>
             </div>
@@ -421,7 +472,10 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                 onChange={toggleRandomizeDelivery}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
               />
-              <label htmlFor="randomize-delivery" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="randomize-delivery"
+                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+              >
                 Randomize delivery times within frequency range
               </label>
             </div>
@@ -430,34 +484,69 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
 
         {/* Content Source Management */}
         <div>
-          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Content Source Management</h3>
+          <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">
+            Content Source Management
+          </h3>
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-4">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                 <thead>
                   <tr>
-                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Source</th>
-                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">URL</th>
-                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Content Types</th>
-                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th
+                      scope="col"
+                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Source
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      URL
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Content Types
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-                  {contentSources.map((source) => (
+                  {contentSources.map(source => (
                     <tr key={source.id}>
                       <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         {source.name}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 dark:text-blue-400 hover:underline"
+                        >
                           {source.url}
                         </a>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex flex-wrap gap-1">
                           {source.contentTypes.map(type => (
-                            <span key={type} className="px-2 py-0.5 text-xs rounded-full bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100">
+                            <span
+                              key={type}
+                              className="px-2 py-0.5 text-xs rounded-full bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100"
+                            >
                               {type}
                             </span>
                           ))}
@@ -466,10 +555,11 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
                       <td className="px-3 py-2 whitespace-nowrap text-sm">
                         <button
                           onClick={() => toggleContentSource(source.id)}
-                          className={`px-2 py-1 text-xs font-medium rounded ${source.enabled
-                            ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100'
-                            : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
-                            }`}
+                          className={`px-2 py-1 text-xs font-medium rounded ${
+                            source.enabled
+                              ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100'
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
+                          }`}
                         >
                           {source.enabled ? 'Enabled' : 'Disabled'}
                         </button>
@@ -489,26 +579,38 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add New Source</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Add New Source
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="source-name" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Name</label>
+                  <label
+                    htmlFor="source-name"
+                    className="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                  >
+                    Name
+                  </label>
                   <input
                     type="text"
                     id="source-name"
                     value={newSource.name}
-                    onChange={(e) => setNewSource({ ...newSource, name: e.target.value })}
+                    onChange={e => setNewSource({ ...newSource, name: e.target.value })}
                     className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
                     placeholder="Reddit - r/example"
                   />
                 </div>
                 <div>
-                  <label htmlFor="source-url" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">URL</label>
+                  <label
+                    htmlFor="source-url"
+                    className="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                  >
+                    URL
+                  </label>
                   <input
                     type="text"
                     id="source-url"
                     value={newSource.url}
-                    onChange={(e) => setNewSource({ ...newSource, url: e.target.value })}
+                    onChange={e => setNewSource({ ...newSource, url: e.target.value })}
                     className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
                     placeholder="https://example.com"
                   />
@@ -516,16 +618,19 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
               </div>
 
               <div className="mt-3">
-                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Content Types</label>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  Content Types
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {contentTypes.map(type => (
                     <button
                       key={type.type}
                       onClick={() => handleNewSourceTypeToggle(type.type)}
-                      className={`px-2 py-1 text-xs font-medium rounded ${newSource.contentTypes.includes(type.type)
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
-                        }`}
+                      className={`px-2 py-1 text-xs font-medium rounded ${
+                        newSource.contentTypes.includes(type.type)
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'
+                      }`}
                     >
                       {type.type}
                     </button>
@@ -564,11 +669,13 @@ const ContentSettings = ({ accountId, onSave }: ContentSettingsProps) => {
               <ArrowPathIcon className="h-4 w-4 mr-2 animate-spin" />
               Saving...
             </>
-          ) : 'Save Settings'}
+          ) : (
+            'Save Settings'
+          )}
         </button>
       </div>
     </div>
   );
 };
 
-export default ContentSettings; 
+export default ContentSettings;

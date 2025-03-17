@@ -7,10 +7,7 @@ interface PublicRouteProps {
   redirectPath?: string;
 }
 
-const PublicRoute = ({
-  component: Component,
-  redirectPath = '/dashboard'
-}: PublicRouteProps) => {
+const PublicRoute = ({ component: Component, redirectPath = '/dashboard' }: PublicRouteProps) => {
   const { isAuthenticated, loading } = useContext(AuthContext);
 
   if (loading) {
@@ -34,4 +31,4 @@ const PublicRoute = ({
   return <Component />;
 };
 
-export default PublicRoute; 
+export default PublicRoute;

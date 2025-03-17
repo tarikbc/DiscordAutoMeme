@@ -9,9 +9,7 @@ const checkIsAdmin = (user: User | null): boolean => {
     return false;
   }
 
-  return user.roles.some(role =>
-    typeof role === 'object' && role.name === 'admin'
-  );
+  return user.roles.some(role => typeof role === 'object' && role.name === 'admin');
 };
 
 interface AuthProviderProps {
@@ -68,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         atob(base64)
           .split('')
           .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
+          .join(''),
       );
 
       const { exp } = JSON.parse(jsonPayload);
@@ -79,7 +77,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Refresh 5 minutes before expiration or immediately if less than 6 minutes remain
       refreshTime = Math.max(timeUntilExpiration - 5 * 60 * 1000, 0);
 
-      if (refreshTime < 60000) { // Less than 1 minute left
+      if (refreshTime < 60000) {
+        // Less than 1 minute left
         refreshToken();
         return;
       }
@@ -180,4 +179,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

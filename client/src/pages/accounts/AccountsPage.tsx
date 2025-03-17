@@ -19,7 +19,11 @@ const AccountsPage = () => {
         setAccounts(mockAccounts);
       } catch (error) {
         console.error('Failed to fetch accounts:', error);
-        showNotification('error', 'Error Loading Accounts', 'Failed to fetch Discord accounts. Please try again.');
+        showNotification(
+          'error',
+          'Error Loading Accounts',
+          'Failed to fetch Discord accounts. Please try again.',
+        );
       } finally {
         setLoading(false);
       }
@@ -36,25 +40,25 @@ const AccountsPage = () => {
         prevAccounts.map(account =>
           account.id === accountId
             ? {
-              ...account,
-              isActive: !currentStatus,
-              status: !currentStatus ? 'connecting' : 'offline'
-            }
-            : account
-        )
+                ...account,
+                isActive: !currentStatus,
+                status: !currentStatus ? 'connecting' : 'offline',
+              }
+            : account,
+        ),
       );
 
       showNotification(
         'success',
         `Account ${currentStatus ? 'Stopped' : 'Started'}`,
-        `Discord account has been ${currentStatus ? 'stopped' : 'started'} successfully.`
+        `Discord account has been ${currentStatus ? 'stopped' : 'started'} successfully.`,
       );
     } catch (error) {
       console.error(`Failed to ${currentStatus ? 'stop' : 'start'} account:`, error);
       showNotification(
         'error',
         `Error ${currentStatus ? 'Stopping' : 'Starting'} Account`,
-        `Failed to ${currentStatus ? 'stop' : 'start'} Discord account. Please try again.`
+        `Failed to ${currentStatus ? 'stop' : 'start'} Discord account. Please try again.`,
       );
     }
   };
@@ -72,14 +76,14 @@ const AccountsPage = () => {
       showNotification(
         'success',
         'Account Deleted',
-        'Discord account has been deleted successfully.'
+        'Discord account has been deleted successfully.',
       );
     } catch (error) {
       console.error('Failed to delete account:', error);
       showNotification(
         'error',
         'Error Deleting Account',
-        'Failed to delete Discord account. Please try again.'
+        'Failed to delete Discord account. Please try again.',
       );
     }
   };
@@ -107,7 +111,9 @@ const AccountsPage = () => {
     }
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor} ${textColor}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor} ${textColor}`}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -143,7 +149,7 @@ const AccountsPage = () => {
         <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
           {accounts.length > 0 ? (
             <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-              {accounts.map((account) => (
+              {accounts.map(account => (
                 <li key={account.id}>
                   <div className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
@@ -152,7 +158,9 @@ const AccountsPage = () => {
                           {account.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">{account.name}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {account.name}
+                          </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             Added on {new Date(account.createdAt).toLocaleDateString()}
                           </div>
@@ -171,13 +179,17 @@ const AccountsPage = () => {
                           {account.lastActive && (
                             <>
                               <span className="mx-2">•</span>
-                              <span>Last active: {new Date(account.lastActive).toLocaleString()}</span>
+                              <span>
+                                Last active: {new Date(account.lastActive).toLocaleString()}
+                              </span>
                             </>
                           )}
                           {account.error && (
                             <>
                               <span className="mx-2">•</span>
-                              <span className="text-red-500 dark:text-red-400">{account.error}</span>
+                              <span className="text-red-500 dark:text-red-400">
+                                {account.error}
+                              </span>
                             </>
                           )}
                         </div>
@@ -186,10 +198,11 @@ const AccountsPage = () => {
                         <button
                           type="button"
                           onClick={() => toggleAccountStatus(account.id, account.isActive)}
-                          className={`inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md ${account.isActive
-                            ? 'text-red-700 dark:text-red-200 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/40'
-                            : 'text-green-700 dark:text-green-200 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/40'
-                            }`}
+                          className={`inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md ${
+                            account.isActive
+                              ? 'text-red-700 dark:text-red-200 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/40'
+                              : 'text-green-700 dark:text-green-200 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/40'
+                          }`}
                         >
                           {account.isActive ? (
                             <>
@@ -240,8 +253,12 @@ const AccountsPage = () => {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">No accounts found</h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding a new Discord account.</p>
+              <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">
+                No accounts found
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Get started by adding a new Discord account.
+              </p>
               <div className="mt-6">
                 <Link
                   to="/accounts/new"
@@ -259,4 +276,4 @@ const AccountsPage = () => {
   );
 };
 
-export default AccountsPage; 
+export default AccountsPage;

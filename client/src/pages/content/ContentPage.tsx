@@ -1,5 +1,11 @@
 import { useState, useEffect, useContext } from 'react';
-import { ChartBarIcon, ArrowUpIcon, ArrowDownIcon, CogIcon, ClockIcon } from '@heroicons/react/24/outline';
+import {
+  ChartBarIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  CogIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline';
 import { NotificationContext } from '../../context';
 import { ContentHistoryView, ContentSettings, ContentPreview } from '../../components/content';
 import { Tab } from '@headlessui/react';
@@ -70,37 +76,41 @@ const ContentPage = () => {
             { id: 'chan2', name: 'random', count: 98, percentage: 20.1 },
             { id: 'chan3', name: 'general', count: 65, percentage: 13.3 },
             { id: 'chan4', name: 'off-topic', count: 59, percentage: 12.1 },
-            { id: 'chan5', name: 'gaming', count: 55, percentage: 11.3 }
+            { id: 'chan5', name: 'gaming', count: 55, percentage: 11.3 },
           ],
           topCategories: [
             { id: 'cat1', name: 'Comedy', count: 187, percentage: 38.4 },
             { id: 'cat2', name: 'Gaming', count: 124, percentage: 25.5 },
             { id: 'cat3', name: 'Animals', count: 76, percentage: 15.6 },
             { id: 'cat4', name: 'Reaction', count: 52, percentage: 10.7 },
-            { id: 'cat5', name: 'Tech', count: 48, percentage: 9.9 }
+            { id: 'cat5', name: 'Tech', count: 48, percentage: 9.9 },
           ],
           deliveryByDay: Array.from({ length: 30 }, (_, i) => {
             const date = new Date();
             date.setDate(date.getDate() - (29 - i));
             return {
               date: date.toISOString().split('T')[0],
-              count: Math.floor(Math.random() * 30) + 5
+              count: Math.floor(Math.random() * 30) + 5,
             };
-          })
+          }),
         };
 
         // Mock friends data
         const mockFriends: Friend[] = Array.from({ length: 8 }, (_, i) => ({
           id: `friend-${i + 1}`,
           name: `Friend ${i + 1}`,
-          avatarUrl: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'men' : 'women'}/${i + 1}.jpg`
+          avatarUrl: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'men' : 'women'}/${i + 1}.jpg`,
         }));
 
         setStats(mockStats);
         setFriends(mockFriends);
       } catch (error) {
         console.error('Failed to fetch content stats:', error);
-        showNotification('error', 'Error Loading Stats', 'Failed to load content statistics. Please try again.');
+        showNotification(
+          'error',
+          'Error Loading Stats',
+          'Failed to load content statistics. Please try again.',
+        );
       } finally {
         setLoading(false);
       }
@@ -113,9 +123,13 @@ const ContentPage = () => {
     return (
       <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-5">
         <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{title}</dt>
-        <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{value.toLocaleString()}</dd>
+        <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+          {value.toLocaleString()}
+        </dd>
         {change !== undefined && (
-          <dd className={`mt-1 flex items-center text-sm ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+          <dd
+            className={`mt-1 flex items-center text-sm ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+          >
             {change >= 0 ? (
               <ArrowUpIcon className="h-4 w-4 flex-shrink-0 mr-1.5" aria-hidden="true" />
             ) : (
@@ -132,10 +146,7 @@ const ContentPage = () => {
   const renderProgressBar = (value: number, color: string) => {
     return (
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-        <div
-          className={`h-2.5 rounded-full ${color}`}
-          style={{ width: `${value}%` }}
-        ></div>
+        <div className={`h-2.5 rounded-full ${color}`} style={{ width: `${value}%` }}></div>
       </div>
     );
   };
@@ -173,7 +184,11 @@ const ContentPage = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Success
-    showNotification('success', 'Settings Saved', 'Content settings have been updated successfully.');
+    showNotification(
+      'success',
+      'Settings Saved',
+      'Content settings have been updated successfully.',
+    );
   };
 
   return (
@@ -186,30 +201,33 @@ const ContentPage = () => {
             <button
               type="button"
               onClick={() => setTimeRange('7d')}
-              className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold ${timeRange === '7d'
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
-                } focus:z-10 focus:outline-none`}
+              className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold ${
+                timeRange === '7d'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
+              } focus:z-10 focus:outline-none`}
             >
               7d
             </button>
             <button
               type="button"
               onClick={() => setTimeRange('30d')}
-              className={`relative -ml-px inline-flex items-center px-3 py-2 text-sm font-semibold ${timeRange === '30d'
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
-                } focus:z-10 focus:outline-none`}
+              className={`relative -ml-px inline-flex items-center px-3 py-2 text-sm font-semibold ${
+                timeRange === '30d'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
+              } focus:z-10 focus:outline-none`}
             >
               30d
             </button>
             <button
               type="button"
               onClick={() => setTimeRange('90d')}
-              className={`relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold ${timeRange === '90d'
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
-                } focus:z-10 focus:outline-none`}
+              className={`relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold ${
+                timeRange === '90d'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600'
+              } focus:z-10 focus:outline-none`}
             >
               90d
             </button>
@@ -223,9 +241,10 @@ const ContentPage = () => {
             <Tab
               className={({ selected }) =>
                 `w-full rounded-lg py-2.5 text-sm font-medium leading-5 
-                ${selected
-                  ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
+                ${
+                  selected
+                    ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
                 }`
               }
             >
@@ -237,9 +256,10 @@ const ContentPage = () => {
             <Tab
               className={({ selected }) =>
                 `w-full rounded-lg py-2.5 text-sm font-medium leading-5 
-                ${selected
-                  ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
+                ${
+                  selected
+                    ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
                 }`
               }
             >
@@ -251,9 +271,10 @@ const ContentPage = () => {
             <Tab
               className={({ selected }) =>
                 `w-full rounded-lg py-2.5 text-sm font-medium leading-5 
-                ${selected
-                  ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
+                ${
+                  selected
+                    ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-white'
                 }`
               }
             >
@@ -289,7 +310,7 @@ const ContentPage = () => {
                         </h3>
                         <div className="mt-5">
                           <ul className="space-y-4">
-                            {stats.topChannels.map((channel) => (
+                            {stats.topChannels.map(channel => (
                               <li key={channel.id}>
                                 <div className="flex items-center justify-between mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                   <span>#{channel.name}</span>
@@ -297,7 +318,10 @@ const ContentPage = () => {
                                     {channel.count} ({channel.percentage.toFixed(1)}%)
                                   </span>
                                 </div>
-                                {renderProgressBar(channel.percentage, 'bg-purple-600 dark:bg-purple-500')}
+                                {renderProgressBar(
+                                  channel.percentage,
+                                  'bg-purple-600 dark:bg-purple-500',
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -313,7 +337,7 @@ const ContentPage = () => {
                         </h3>
                         <div className="mt-5">
                           <ul className="space-y-4">
-                            {stats.topCategories.map((category) => (
+                            {stats.topCategories.map(category => (
                               <li key={category.id}>
                                 <div className="flex items-center justify-between mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                   <span>{category.name}</span>
@@ -321,7 +345,10 @@ const ContentPage = () => {
                                     {category.count} ({category.percentage.toFixed(1)}%)
                                   </span>
                                 </div>
-                                {renderProgressBar(category.percentage, 'bg-blue-600 dark:bg-blue-500')}
+                                {renderProgressBar(
+                                  category.percentage,
+                                  'bg-blue-600 dark:bg-blue-500',
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -341,18 +368,24 @@ const ContentPage = () => {
                         {/* Simple bar chart implementation */}
                         <div className="absolute inset-0 flex items-end">
                           {stats.deliveryByDay.map((day, index) => (
-                            <div key={day.date} className="flex-1 flex flex-col justify-end items-center">
+                            <div
+                              key={day.date}
+                              className="flex-1 flex flex-col justify-end items-center"
+                            >
                               <div
                                 className="w-5/6 bg-blue-500 dark:bg-blue-400 rounded-t"
                                 style={{
                                   height: `${(day.count / Math.max(...stats.deliveryByDay.map(d => d.count))) * 100}%`,
-                                  opacity: index % 2 === 0 ? 0.9 : 1
+                                  opacity: index % 2 === 0 ? 0.9 : 1,
                                 }}
                               ></div>
                               {/* Only show every 5th date for readability */}
                               {index % 5 === 0 && (
                                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 transform -rotate-45 origin-top-left">
-                                  {new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                  {new Date(day.date).toLocaleDateString(undefined, {
+                                    month: 'short',
+                                    day: 'numeric',
+                                  })}
                                 </div>
                               )}
                             </div>
@@ -413,4 +446,4 @@ const ContentPage = () => {
   );
 };
 
-export default ContentPage; 
+export default ContentPage;

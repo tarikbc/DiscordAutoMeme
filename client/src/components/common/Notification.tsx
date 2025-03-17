@@ -1,6 +1,11 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Transition } from '@headlessui/react';
-import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  ExclamationTriangleIcon,
+  XMarkIcon,
+} from '@heroicons/react/20/solid';
 
 export type NotificationType = 'success' | 'error' | 'warning';
 
@@ -95,12 +100,12 @@ const Notification = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ${getBgColor()}`}>
+          <div
+            className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ${getBgColor()}`}
+          >
             <div className="p-4">
               <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  {getIcon()}
-                </div>
+                <div className="flex-shrink-0">{getIcon()}</div>
                 <div className="ml-3 w-0 flex-1 pt-0.5">
                   <p className={`text-sm font-medium ${getTextColor()}`}>{title}</p>
                   <p className={`mt-1 text-sm ${getTextColor()}`}>{message}</p>
@@ -127,4 +132,4 @@ const Notification = ({
   );
 };
 
-export default Notification; 
+export default Notification;

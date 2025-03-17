@@ -75,8 +75,8 @@ const ResetPassword = () => {
                   </h3>
                   <div className="mt-2 text-sm text-green-700 dark:text-green-300">
                     <p>
-                      Your password has been successfully reset. You'll be redirected to the login page
-                      in a few seconds.
+                      Your password has been successfully reset. You'll be redirected to the login
+                      page in a few seconds.
                     </p>
                   </div>
                   <div className="mt-4">
@@ -104,7 +104,10 @@ const ResetPassword = () => {
 
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
                     New Password
                   </label>
                   <div className="mt-1">
@@ -115,14 +118,17 @@ const ResetPassword = () => {
                       autoComplete="new-password"
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={e => setPassword(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <label
+                    htmlFor="confirm-password"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
                     Confirm New Password
                   </label>
                   <div className="mt-1">
@@ -133,7 +139,7 @@ const ResetPassword = () => {
                       autoComplete="new-password"
                       required
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={e => setConfirmPassword(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                     />
                   </div>
@@ -166,4 +172,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword; 
+export default ResetPassword;

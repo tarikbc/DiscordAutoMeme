@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeftIcon, CogIcon, ChartBarIcon, ClockIcon, BoltIcon, CheckIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  CogIcon,
+  ChartBarIcon,
+  ClockIcon,
+  BoltIcon,
+  CheckIcon,
+  CalendarIcon,
+} from '@heroicons/react/24/outline';
 import FriendActivityTimeline from './FriendActivityTimeline';
 
 interface ActivityPattern {
@@ -49,9 +57,17 @@ interface FriendDetailViewProps {
   onSettingsChanged?: (friendId: string, settings: TargetingSettingsUpdate) => Promise<void>;
 }
 
-const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSettingsChanged }: FriendDetailViewProps) => {
+const FriendDetailView = ({
+  friendId,
+  friend,
+  loading = false,
+  onBack,
+  onSettingsChanged,
+}: FriendDetailViewProps) => {
   const [friendData, setFriendData] = useState<Friend | null>(friend || null);
-  const [activeTab, setActiveTab] = useState<'patterns' | 'preferences' | 'targeting' | 'timeline'>('patterns');
+  const [activeTab, setActiveTab] = useState<'patterns' | 'preferences' | 'targeting' | 'timeline'>(
+    'patterns',
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [savingSuccess, setSavingSuccess] = useState(false);
   const mockDataGeneratedRef = useRef(false);
@@ -92,13 +108,16 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           }
 
           // Random variation
-          const frequency = Math.min(10, Math.max(0, baseFrequency + Math.floor(Math.random() * 3) - 1));
+          const frequency = Math.min(
+            10,
+            Math.max(0, baseFrequency + Math.floor(Math.random() * 3) - 1),
+          );
 
           if (frequency > 0) {
             patterns.push({
               dayOfWeek: day,
               hourOfDay: hour,
-              frequency
+              frequency,
             });
           }
         }
@@ -109,7 +128,7 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
       const contentPreferences = contentTypes.map(type => ({
         type,
         score: Math.floor(Math.random() * 100),
-        reactionFrequency: Math.floor(Math.random() * 100)
+        reactionFrequency: Math.floor(Math.random() * 100),
       }));
 
       // Sort by score descending
@@ -121,32 +140,32 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           id: 'targeting-activity',
           name: 'Activity-Based Timing',
           enabled: Math.random() > 0.3,
-          description: 'Send content when friend is most active'
+          description: 'Send content when friend is most active',
         },
         {
           id: 'targeting-content',
           name: 'Content Type Matching',
           enabled: Math.random() > 0.3,
-          description: 'Prioritize content types with highest engagement'
+          description: 'Prioritize content types with highest engagement',
         },
         {
           id: 'targeting-frequency',
           name: 'Optimized Frequency',
           enabled: Math.random() > 0.3,
-          description: 'Automatically adjust content frequency based on responses'
+          description: 'Automatically adjust content frequency based on responses',
         },
         {
           id: 'targeting-weekday',
           name: 'Weekday Focus',
           enabled: Math.random() > 0.7,
-          description: 'Focus content delivery on weekdays'
+          description: 'Focus content delivery on weekdays',
         },
         {
           id: 'targeting-weekend',
           name: 'Weekend Focus',
           enabled: Math.random() > 0.7,
-          description: 'Focus content delivery on weekends'
-        }
+          description: 'Focus content delivery on weekends',
+        },
       ];
 
       const mockFriend: Friend = {
@@ -160,8 +179,14 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
         joinedAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
         contentSent: Math.floor(Math.random() * 200),
         contentReacted: Math.floor(Math.random() * 100),
-        favoriteGames: ['Minecraft', 'Fortnite', 'League of Legends'].slice(0, Math.floor(Math.random() * 3) + 1),
-        favoriteMusic: ['Pop', 'Rock', 'Electronic', 'Hip Hop'].slice(0, Math.floor(Math.random() * 4) + 1)
+        favoriteGames: ['Minecraft', 'Fortnite', 'League of Legends'].slice(
+          0,
+          Math.floor(Math.random() * 3) + 1,
+        ),
+        favoriteMusic: ['Pop', 'Rock', 'Electronic', 'Hip Hop'].slice(
+          0,
+          Math.floor(Math.random() * 4) + 1,
+        ),
       };
 
       setFriendData(mockFriend);
@@ -174,7 +199,7 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -195,12 +220,12 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
     if (!friendData) return;
 
     const updatedSettings = friendData.targetingSettings.map(setting =>
-      setting.id === settingId ? { ...setting, enabled: !setting.enabled } : setting
+      setting.id === settingId ? { ...setting, enabled: !setting.enabled } : setting,
     );
 
     setFriendData({
       ...friendData,
-      targetingSettings: updatedSettings
+      targetingSettings: updatedSettings,
     });
   };
 
@@ -211,7 +236,7 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
 
     try {
       await onSettingsChanged(friendData.id, {
-        targetingSettings: friendData.targetingSettings
+        targetingSettings: friendData.targetingSettings,
       });
 
       setSavingSuccess(true);
@@ -271,9 +296,25 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           >
             {isSaving ? (
               <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Saving...
               </span>
@@ -293,16 +334,23 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
         <div className="flex items-center">
           <div className="relative h-16 w-16 rounded-full overflow-hidden">
             <img
-              src={friendData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(friendData.name)}&background=random`}
+              src={
+                friendData.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(friendData.name)}&background=random`
+              }
               alt={friendData.name}
               className="h-full w-full object-cover"
             />
             <span
-              className={`absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-white dark:ring-gray-800 ${friendData.status === 'online' ? 'bg-green-500' :
-                friendData.status === 'idle' ? 'bg-yellow-500' :
-                  friendData.status === 'dnd' ? 'bg-red-500' :
-                    'bg-gray-400'
-                }`}
+              className={`absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-white dark:ring-gray-800 ${
+                friendData.status === 'online'
+                  ? 'bg-green-500'
+                  : friendData.status === 'idle'
+                    ? 'bg-yellow-500'
+                    : friendData.status === 'dnd'
+                      ? 'bg-red-500'
+                      : 'bg-gray-400'
+              }`}
             ></span>
           </div>
           <div className="ml-4">
@@ -314,16 +362,23 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
         </div>
         <div className="flex mt-4 sm:mt-0 sm:ml-auto space-x-6">
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{friendData.contentSent}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {friendData.contentSent}
+            </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">Content Sent</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{friendData.contentReacted}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {friendData.contentReacted}
+            </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">Reactions</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {friendData.contentReacted > 0 ? Math.round((friendData.contentReacted / friendData.contentSent) * 100) : 0}%
+              {friendData.contentReacted > 0
+                ? Math.round((friendData.contentReacted / friendData.contentSent) * 100)
+                : 0}
+              %
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">Response Rate</p>
           </div>
@@ -335,10 +390,11 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           <button
             type="button"
             onClick={() => setActiveTab('patterns')}
-            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${activeTab === 'patterns'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-              }`}
+            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${
+              activeTab === 'patterns'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
           >
             <div className="flex items-center">
               <ClockIcon className="h-4 w-4 mr-1" />
@@ -348,10 +404,11 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           <button
             type="button"
             onClick={() => setActiveTab('timeline')}
-            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${activeTab === 'timeline'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-              }`}
+            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${
+              activeTab === 'timeline'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
           >
             <div className="flex items-center">
               <CalendarIcon className="h-4 w-4 mr-1" />
@@ -361,10 +418,11 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           <button
             type="button"
             onClick={() => setActiveTab('preferences')}
-            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${activeTab === 'preferences'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-              }`}
+            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${
+              activeTab === 'preferences'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
           >
             <div className="flex items-center">
               <ChartBarIcon className="h-4 w-4 mr-1" />
@@ -374,10 +432,11 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
           <button
             type="button"
             onClick={() => setActiveTab('targeting')}
-            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${activeTab === 'targeting'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-              }`}
+            className={`px-3 py-2 text-sm font-medium rounded-t-md border-b-2 ${
+              activeTab === 'targeting'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
           >
             <div className="flex items-center">
               <CogIcon className="h-4 w-4 mr-1" />
@@ -391,7 +450,9 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
         {activeTab === 'patterns' && (
           <div>
             <div className="mb-4">
-              <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">Activity Heatmap</h3>
+              <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">
+                Activity Heatmap
+              </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
                 Shows when this friend is typically active on Discord.
               </p>
@@ -402,7 +463,10 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
                   <div className="flex">
                     <div className="w-10"></div>
                     {Array.from({ length: 24 }).map((_, hour) => (
-                      <div key={hour} className="w-6 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                      <div
+                        key={hour}
+                        className="w-6 text-center text-xs font-medium text-gray-500 dark:text-gray-400"
+                      >
                         {hour}
                       </div>
                     ))}
@@ -415,7 +479,9 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
                         {getDayName(day)}
                       </div>
                       {Array.from({ length: 24 }).map((_, hour) => {
-                        const pattern = friendData.activityPatterns.find(p => p.dayOfWeek === day && p.hourOfDay === hour);
+                        const pattern = friendData.activityPatterns.find(
+                          p => p.dayOfWeek === day && p.hourOfDay === hour,
+                        );
                         const frequency = pattern ? pattern.frequency : 0;
 
                         return (
@@ -456,7 +522,10 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
                   </h4>
                   <ul className="space-y-1">
                     {friendData.favoriteGames.map(game => (
-                      <li key={game} className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                      <li
+                        key={game}
+                        className="text-sm text-gray-600 dark:text-gray-300 flex items-center"
+                      >
                         <span className="h-1.5 w-1.5 rounded-full bg-purple-500 mr-2"></span>
                         {game}
                       </li>
@@ -468,14 +537,22 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
               {friendData.favoriteMusic && friendData.favoriteMusic.length > 0 && (
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2 flex items-center">
-                    <svg className="h-4 w-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <svg
+                      className="h-4 w-4 mr-1 text-green-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"></path>
                     </svg>
                     Music Preferences
                   </h4>
                   <ul className="space-y-1">
                     {friendData.favoriteMusic.map(genre => (
-                      <li key={genre} className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                      <li
+                        key={genre}
+                        className="text-sm text-gray-600 dark:text-gray-300 flex items-center"
+                      >
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500 mr-2"></span>
                         {genre}
                       </li>
@@ -492,7 +569,9 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
             <div className="mb-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-md font-medium text-gray-900 dark:text-white">Activity Timeline</h3>
+                  <h3 className="text-md font-medium text-gray-900 dark:text-white">
+                    Activity Timeline
+                  </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     View all activities and events from this friend over time.
                   </p>
@@ -501,30 +580,33 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
                   <button
                     type="button"
                     onClick={() => handleTimeRangeChange('1d')}
-                    className={`inline-flex items-center px-3 py-1.5 border ${timeRange === '1d'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
-                      : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
-                      } text-sm font-medium rounded-l-md focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+                    className={`inline-flex items-center px-3 py-1.5 border ${
+                      timeRange === '1d'
+                        ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
+                        : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
+                    } text-sm font-medium rounded-l-md focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
                   >
                     1 Day
                   </button>
                   <button
                     type="button"
                     onClick={() => handleTimeRangeChange('7d')}
-                    className={`inline-flex items-center px-3 py-1.5 border ${timeRange === '7d'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
-                      : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
-                      } text-sm font-medium focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+                    className={`inline-flex items-center px-3 py-1.5 border ${
+                      timeRange === '7d'
+                        ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
+                        : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
+                    } text-sm font-medium focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
                   >
                     7 Days
                   </button>
                   <button
                     type="button"
                     onClick={() => handleTimeRangeChange('30d')}
-                    className={`inline-flex items-center px-3 py-1.5 border ${timeRange === '30d'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
-                      : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
-                      } text-sm font-medium rounded-r-md focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+                    className={`inline-flex items-center px-3 py-1.5 border ${
+                      timeRange === '30d'
+                        ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500'
+                        : 'border-gray-300 bg-white text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200'
+                    } text-sm font-medium rounded-r-md focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
                   >
                     30 Days
                   </button>
@@ -542,16 +624,20 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
 
         {activeTab === 'preferences' && (
           <div>
-            <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">Content Preferences</h3>
+            <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">
+              Content Preferences
+            </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
               Shows what types of content this friend engages with most.
             </p>
 
             <div className="space-y-6">
-              {friendData.contentPreferences.map((pref) => (
+              {friendData.contentPreferences.map(pref => (
                 <div key={pref.type} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white capitalize">{pref.type}</h4>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                      {pref.type}
+                    </h4>
                     <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                       {pref.score}% engagement
                     </span>
@@ -590,40 +676,52 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
 
         {activeTab === 'targeting' && (
           <div>
-            <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">Targeting Settings</h3>
+            <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">
+              Targeting Settings
+            </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
               Configure how content is delivered to this friend.
             </p>
 
             <div className="space-y-4">
-              {friendData.targetingSettings.map((setting) => (
-                <div key={setting.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+              {friendData.targetingSettings.map(setting => (
+                <div
+                  key={setting.id}
+                  className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between"
+                >
                   <div>
                     <div className="flex items-center">
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">{setting.name}</h4>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                        {setting.name}
+                      </h4>
                       {setting.enabled && (
                         <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                           Enabled
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{setting.description}</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {setting.description}
+                    </p>
                   </div>
                   <div className="ml-4">
                     <button
                       type="button"
                       onClick={() => toggleTargetingSetting(setting.id)}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${setting.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
-                        }`}
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                        setting.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                     >
                       <span className="sr-only">Toggle {setting.name}</span>
                       <span
-                        className={`pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${setting.enabled ? 'translate-x-5' : 'translate-x-0'
-                          }`}
+                        className={`pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          setting.enabled ? 'translate-x-5' : 'translate-x-0'
+                        }`}
                       >
                         <span
-                          className={`absolute inset-0 flex h-full w-full items-center justify-center transition-opacity ${setting.enabled ? 'opacity-0' : 'opacity-100'
-                            }`}
+                          className={`absolute inset-0 flex h-full w-full items-center justify-center transition-opacity ${
+                            setting.enabled ? 'opacity-0' : 'opacity-100'
+                          }`}
                         >
                           <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
                             <path
@@ -636,10 +734,15 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
                           </svg>
                         </span>
                         <span
-                          className={`absolute inset-0 flex h-full w-full items-center justify-center transition-opacity ${setting.enabled ? 'opacity-100' : 'opacity-0'
-                            }`}
+                          className={`absolute inset-0 flex h-full w-full items-center justify-center transition-opacity ${
+                            setting.enabled ? 'opacity-100' : 'opacity-0'
+                          }`}
                         >
-                          <svg className="h-3 w-3 text-blue-600" fill="currentColor" viewBox="0 0 12 12">
+                          <svg
+                            className="h-3 w-3 text-blue-600"
+                            fill="currentColor"
+                            viewBox="0 0 12 12"
+                          >
                             <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
                           </svg>
                         </span>
@@ -656,4 +759,4 @@ const FriendDetailView = ({ friendId, friend, loading = false, onBack, onSetting
   );
 };
 
-export default FriendDetailView; 
+export default FriendDetailView;

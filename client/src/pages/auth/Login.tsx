@@ -32,7 +32,7 @@ const Login = () => {
     try {
       const loginData: LoginRequest = {
         email,
-        password
+        password,
       };
 
       const data = await api.auth.login(loginData);
@@ -59,7 +59,10 @@ const Login = () => {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
 
       // Check if this is a rate limiting error
-      if (errorMessage.toLowerCase().includes('too many') || errorMessage.toLowerCase().includes('try again later')) {
+      if (
+        errorMessage.toLowerCase().includes('too many') ||
+        errorMessage.toLowerCase().includes('try again later')
+      ) {
         setIsRateLimited(true);
       }
 
@@ -80,10 +83,16 @@ const Login = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
-            <div className={`mb-4 ${isRateLimited ? 'bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400' : 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400'} p-4`}>
+            <div
+              className={`mb-4 ${isRateLimited ? 'bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400' : 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400'} p-4`}
+            >
               <div className="flex">
                 <div className="ml-3">
-                  <p className={`text-sm ${isRateLimited ? 'text-yellow-700 dark:text-yellow-200' : 'text-red-700 dark:text-red-200'}`}>{error}</p>
+                  <p
+                    className={`text-sm ${isRateLimited ? 'text-yellow-700 dark:text-yellow-200' : 'text-red-700 dark:text-red-200'}`}
+                  >
+                    {error}
+                  </p>
                 </div>
               </div>
             </div>
@@ -91,7 +100,10 @@ const Login = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+              >
                 Email address
               </label>
               <div className="mt-1">
@@ -102,14 +114,17 @@ const Login = () => {
                   autoComplete="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+              >
                 Password
               </label>
               <div className="mt-1">
@@ -120,7 +135,7 @@ const Login = () => {
                   autoComplete="current-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                 />
               </div>
@@ -128,7 +143,10 @@ const Login = () => {
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                >
                   Forgot your password?
                 </Link>
               </div>
@@ -172,4 +190,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

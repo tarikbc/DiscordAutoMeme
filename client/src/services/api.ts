@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosHeaders } from 'axios';
 import { LoginRequest, LoginResponse, RegisterRequest, User } from '../types/auth';
 import { DiscordAccount, CreateAccountRequest, UpdateAccountRequest } from '../types/account';
+import { PerformanceAlertConfig } from './socketService';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -319,6 +320,18 @@ const api = {
 
     deleteUser: (id: string) =>
       handleRequest<{ success: boolean }>(axiosInstance.delete(`/users/${id}`)),
+
+    // Performance monitoring endpoints
+    getPerformanceAlerts: () =>
+      handleRequest<PerformanceAlertConfig>(axiosInstance.get('/performance/alerts')),
+
+    setPerformanceAlerts: (config: PerformanceAlertConfig) =>
+      handleRequest<{ success: boolean }>(axiosInstance.post('/performance/alerts', config)),
+
+    togglePerformanceAlert: (metricId: string, enabled: boolean) =>
+      handleRequest<{ success: boolean; config?: PerformanceAlertConfig }>(
+        axiosInstance.post('/performance/alerts/toggle', { metricId, enabled }),
+      ),
   },
 };
 

@@ -12,7 +12,7 @@ interface PrivateRouteProps {
 const PrivateRoute = ({
   component: Component,
   withLayout = false,
-  adminRequired = false
+  adminRequired = false,
 }: PrivateRouteProps) => {
   const { isAuthenticated, loading, isAdmin } = useContext(AuthContext);
 
@@ -51,4 +51,4 @@ const PrivateRoute = ({
   return <Component />;
 };
 
-export default PrivateRoute; 
+export default PrivateRoute;

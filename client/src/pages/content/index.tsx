@@ -1,3 +1,3 @@
 import ContentPage from './ContentPage';
 
-export { ContentPage }; 
+export { ContentPage };

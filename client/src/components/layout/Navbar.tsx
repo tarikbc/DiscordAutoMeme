@@ -1,8 +1,9 @@
-import { Fragment, useContext, useMemo, useState } from 'react';
+import { Fragment, useContext, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, BellIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '../../context';
+import NotificationCenter from '../notifications/NotificationCenter';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -11,7 +12,6 @@ function classNames(...classes: string[]) {
 const Navbar = () => {
   const { user, logout, isAdmin } = useContext(AuthContext);
   const location = useLocation();
-  const [unreadNotifications] = useState(0);
 
   const navigation = useMemo(() => {
     const baseNavigation = [
@@ -23,14 +23,17 @@ const Navbar = () => {
     ];
 
     if (isAdmin) {
-      return [...baseNavigation, { name: 'Admin', href: '/admin', active: location.pathname.startsWith('/admin') }];
+      return [
+        ...baseNavigation,
+        { name: 'Admin', href: '/admin', active: location.pathname.startsWith('/admin') },
+      ];
     }
 
     return baseNavigation;
   }, [location.pathname, isAdmin]);
 
   const userInitials = useMemo(() => {
-    return (user?.name ?? "U").charAt(0).toUpperCase();
+    return (user?.name ?? 'U').charAt(0).toUpperCase();
   }, [user?.name]);
 
   const handleLogout = () => {
@@ -46,11 +49,13 @@ const Navbar = () => {
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
                   <Link to="/dashboard">
-                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">Discord Auto Meme</span>
+                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                      Discord Auto Meme
+                    </span>
                   </Link>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  {navigation.map((item) => (
+                  {navigation.map(item => (
                     <Link
                       key={item.name}
                       to={item.href}
@@ -58,7 +63,7 @@ const Navbar = () => {
                         item.active
                           ? 'border-blue-500 text-gray-900 dark:text-white'
                           : 'border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200',
-                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
+                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium',
                       )}
                     >
                       {item.name}
@@ -67,20 +72,8 @@ const Navbar = () => {
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                {/* Notification bell */}
-                <button
-                  type="button"
-                  className="relative rounded-full bg-white dark:bg-gray-800 p-1 text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center h-5 w-5 text-xs font-medium text-white bg-red-500 rounded-full">
-                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                    </span>
-                  )}
-                </button>
+                {/* Notification Center */}
+                <NotificationCenter />
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -109,7 +102,7 @@ const Navbar = () => {
                             to="/profile"
                             className={classNames(
                               active ? 'bg-gray-100 dark:bg-gray-600' : '',
-                              'block px-4 py-2 text-sm text-gray-700 dark:text-gray-200'
+                              'block px-4 py-2 text-sm text-gray-700 dark:text-gray-200',
                             )}
                           >
                             Your Profile
@@ -122,7 +115,7 @@ const Navbar = () => {
                             to="/settings"
                             className={classNames(
                               active ? 'bg-gray-100 dark:bg-gray-600' : '',
-                              'block px-4 py-2 text-sm text-gray-700 dark:text-gray-200'
+                              'block px-4 py-2 text-sm text-gray-700 dark:text-gray-200',
                             )}
                           >
                             Settings
@@ -135,7 +128,7 @@ const Navbar = () => {
                             onClick={handleLogout}
                             className={classNames(
                               active ? 'bg-gray-100 dark:bg-gray-600' : '',
-                              'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200'
+                              'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200',
                             )}
                           >
                             Sign out
@@ -163,7 +156,7 @@ const Navbar = () => {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 pb-3 pt-2">
-              {navigation.map((item) => (
+              {navigation.map(item => (
                 <Disclosure.Button
                   key={item.name}
                   as={Link}
@@ -172,7 +165,7 @@ const Navbar = () => {
                     item.active
                       ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-200'
                       : 'border-transparent text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200',
-                    'block border-l-4 py-2 pl-3 pr-4 text-base font-medium'
+                    'block border-l-4 py-2 pl-3 pr-4 text-base font-medium',
                   )}
                 >
                   {item.name}
@@ -187,22 +180,16 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800 dark:text-white">{user?.name}</div>
-                  <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{user?.email}</div>
+                  <div className="text-base font-medium text-gray-800 dark:text-white">
+                    {user?.name}
+                  </div>
+                  <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {user?.email}
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  className="relative ml-auto flex-shrink-0 rounded-full bg-white dark:bg-gray-800 p-1 text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center h-5 w-5 text-xs font-medium text-white bg-red-500 rounded-full">
-                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                    </span>
-                  )}
-                </button>
+                <div className="ml-auto">
+                  <NotificationCenter />
+                </div>
               </div>
               <div className="mt-3 space-y-1">
                 <Disclosure.Button
@@ -235,4 +222,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

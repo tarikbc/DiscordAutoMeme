@@ -22,7 +22,11 @@ const Dashboard = () => {
         setAccounts(mockAccounts);
       } catch (error) {
         console.error('Failed to fetch accounts:', error);
-        showNotification('error', 'Error Loading Accounts', 'Failed to fetch Discord accounts. Please try again.');
+        showNotification(
+          'error',
+          'Error Loading Accounts',
+          'Failed to fetch Discord accounts. Please try again.',
+        );
       } finally {
         setLoading(false);
       }
@@ -35,9 +39,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-        Dashboard
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       <p className="mt-2 text-gray-600 dark:text-gray-400 mb-6">
         Welcome back, {user?.name || 'User'}!
       </p>
@@ -47,8 +49,14 @@ const Dashboard = () => {
           title="No Discord Accounts Found"
           message={
             <>
-              <p>You haven't set up any Discord accounts yet. To start using Discord Auto Meme, you need to add at least one Discord account.</p>
-              <p className="mt-1">Follow the instructions to add your first Discord account and start sending memes automatically.</p>
+              <p>
+                You haven't set up any Discord accounts yet. To start using Discord Auto Meme, you
+                need to add at least one Discord account.
+              </p>
+              <p className="mt-1">
+                Follow the instructions to add your first Discord account and start sending memes
+                automatically.
+              </p>
             </>
           }
           actionText="Add Discord Account"
@@ -61,13 +69,13 @@ const Dashboard = () => {
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Discord Accounts
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Discord Accounts</h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {loading ? 'Loading accounts...' :
-                accounts.length > 0 ? `You have ${accounts.length} connected Discord ${accounts.length === 1 ? 'account' : 'accounts'}` :
-                  'No accounts connected yet'}
+              {loading
+                ? 'Loading accounts...'
+                : accounts.length > 0
+                  ? `You have ${accounts.length} connected Discord ${accounts.length === 1 ? 'account' : 'accounts'}`
+                  : 'No accounts connected yet'}
             </p>
             <div className="mt-4">
               <button
@@ -83,11 +91,11 @@ const Dashboard = () => {
 
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Activity
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Activity</h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {accounts.length > 0 ? 'View your recent Discord activity' : 'Add an account to track activity'}
+              {accounts.length > 0
+                ? 'View your recent Discord activity'
+                : 'Add an account to track activity'}
             </p>
             <div className="mt-4">
               <button
@@ -104,11 +112,11 @@ const Dashboard = () => {
 
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Content
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Content</h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {accounts.length > 0 ? 'Manage your memes and automated content' : 'Add an account to manage content'}
+              {accounts.length > 0
+                ? 'Manage your memes and automated content'
+                : 'Add an account to manage content'}
             </p>
             <div className="mt-4">
               <button
@@ -128,4 +136,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { FunnelIcon, CalendarIcon, UserIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
+import {
+  FunnelIcon,
+  CalendarIcon,
+  UserIcon,
+  ChatBubbleBottomCenterTextIcon,
+} from '@heroicons/react/24/outline';
 
 interface ContentHistoryItem {
   id: string;
@@ -26,8 +31,8 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
   const [selectedAccount, setSelectedAccount] = useState<string>('all');
   const [selectedFriend, setSelectedFriend] = useState<string>('all');
   const [selectedContentType, setSelectedContentType] = useState<string>('all');
-  const [accounts, setAccounts] = useState<{ id: string, name: string }[]>([]);
-  const [friends, setFriends] = useState<{ id: string, name: string }[]>([]);
+  const [accounts, setAccounts] = useState<{ id: string; name: string }[]>([]);
+  const [friends, setFriends] = useState<{ id: string; name: string }[]>([]);
   const [contentTypes, setContentTypes] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -46,13 +51,13 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
           contentType: types[i % types.length],
           title: `Content item ${i + 1}`,
           url: `https://example.com/content/${i + 1}`,
-          source: `Source ${i % 3 + 1}`,
+          source: `Source ${(i % 3) + 1}`,
           sentAt: date.toISOString(),
           accountId,
           accountName: `Account ${accountId.split('-')[1]}`,
           friendId,
           friendName: `Friend ${friendId.split('-')[1]}`,
-          reactions: i % 3 === 0 ? ['👍', '😂'] : i % 3 === 1 ? ['👍'] : []
+          reactions: i % 3 === 0 ? ['👍', '😂'] : i % 3 === 1 ? ['👍'] : [],
         };
       });
 
@@ -60,23 +65,17 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
       setFilteredItems(mockItems);
 
       // Extract unique accounts, friends and content types
-      const uniqueAccounts = Array.from(
-        new Set(mockItems.map(item => item.accountId))
-      ).map(id => ({
+      const uniqueAccounts = Array.from(new Set(mockItems.map(item => item.accountId))).map(id => ({
         id,
-        name: mockItems.find(item => item.accountId === id)?.accountName || id
+        name: mockItems.find(item => item.accountId === id)?.accountName || id,
       }));
 
-      const uniqueFriends = Array.from(
-        new Set(mockItems.map(item => item.friendId))
-      ).map(id => ({
+      const uniqueFriends = Array.from(new Set(mockItems.map(item => item.friendId))).map(id => ({
         id,
-        name: mockItems.find(item => item.friendId === id)?.friendName || id
+        name: mockItems.find(item => item.friendId === id)?.friendName || id,
       }));
 
-      const uniqueContentTypes = Array.from(
-        new Set(mockItems.map(item => item.contentType))
-      );
+      const uniqueContentTypes = Array.from(new Set(mockItems.map(item => item.contentType)));
 
       setAccounts(uniqueAccounts);
       setFriends(uniqueFriends);
@@ -109,7 +108,7 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -133,52 +132,67 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
       {isFilterOpen && (
         <div className="p-4 bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="account-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="account-filter"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               <UserIcon className="h-4 w-4 inline mr-1" /> Account
             </label>
             <select
               id="account-filter"
               value={selectedAccount}
-              onChange={(e) => setSelectedAccount(e.target.value)}
+              onChange={e => setSelectedAccount(e.target.value)}
               className="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
             >
               <option value="all">All Accounts</option>
               {accounts.map(account => (
-                <option key={account.id} value={account.id}>{account.name}</option>
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label htmlFor="friend-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="friend-filter"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               <UserIcon className="h-4 w-4 inline mr-1" /> Friend
             </label>
             <select
               id="friend-filter"
               value={selectedFriend}
-              onChange={(e) => setSelectedFriend(e.target.value)}
+              onChange={e => setSelectedFriend(e.target.value)}
               className="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
             >
               <option value="all">All Friends</option>
               {friends.map(friend => (
-                <option key={friend.id} value={friend.id}>{friend.name}</option>
+                <option key={friend.id} value={friend.id}>
+                  {friend.name}
+                </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label htmlFor="content-type-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="content-type-filter"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               <ChatBubbleBottomCenterTextIcon className="h-4 w-4 inline mr-1" /> Content Type
             </label>
             <select
               id="content-type-filter"
               value={selectedContentType}
-              onChange={(e) => setSelectedContentType(e.target.value)}
+              onChange={e => setSelectedContentType(e.target.value)}
               className="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
             >
               <option value="all">All Types</option>
               {contentTypes.map(type => (
-                <option key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
               ))}
             </select>
           </div>
@@ -218,15 +232,22 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
                           {item.contentType}
                         </span>
                       </div>
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-white">{item.title}</h3>
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                        {item.title}
+                      </h3>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Sent to <span className="font-medium">{item.friendName}</span> from <span className="font-medium">{item.accountName}</span>
+                        Sent to <span className="font-medium">{item.friendName}</span> from{' '}
+                        <span className="font-medium">{item.accountName}</span>
                       </p>
                       {item.reactions.length > 0 && (
                         <div className="mt-2 flex items-center">
-                          <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Reactions:</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">
+                            Reactions:
+                          </span>
                           {item.reactions.map((reaction, i) => (
-                            <span key={i} className="text-sm mr-1">{reaction}</span>
+                            <span key={i} className="text-sm mr-1">
+                              {reaction}
+                            </span>
                           ))}
                         </div>
                       )}
@@ -253,4 +274,4 @@ const ContentHistoryView = ({ initialItems = [], loading = false }: ContentHisto
   );
 };
 
-export default ContentHistoryView; 
+export default ContentHistoryView;

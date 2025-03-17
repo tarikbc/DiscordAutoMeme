@@ -32,7 +32,7 @@ const WarningBanner = ({
           <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-200">
             {typeof message === 'string' ? <p>{message}</p> : message}
           </div>
-          {(actionText && (actionLink || onAction)) && (
+          {actionText && (actionLink || onAction) && (
             <div className="mt-4">
               {actionLink ? (
                 <Link
@@ -78,4 +78,4 @@ const WarningBanner = ({
   );
 };
 
-export default WarningBanner; 
+export default WarningBanner;

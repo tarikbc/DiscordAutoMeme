@@ -46,7 +46,7 @@ const AccountForm = ({ mode }: AccountFormProps) => {
           friendCount: 0,
           lastActive: new Date().toISOString(),
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
 
         setAccountName(account.name);
@@ -55,7 +55,11 @@ const AccountForm = ({ mode }: AccountFormProps) => {
         setIsActive(account.isActive);
       } catch (error) {
         console.error('Failed to fetch account details:', error);
-        showNotification('error', 'Error Loading Account', 'Failed to load account details. Please try again.');
+        showNotification(
+          'error',
+          'Error Loading Account',
+          'Failed to load account details. Please try again.',
+        );
         setError('Failed to load account details. Please try again.');
       } finally {
         setFetchingAccount(false);
@@ -85,7 +89,7 @@ const AccountForm = ({ mode }: AccountFormProps) => {
       if (mode === 'create') {
         const accountData = {
           name: accountName.trim(),
-          token: discordToken.trim()
+          token: discordToken.trim(),
         };
 
         if (isSetupMode) {
@@ -97,20 +101,28 @@ const AccountForm = ({ mode }: AccountFormProps) => {
           // For now, assuming this is the only setup step
           await api.setup.complete();
 
-          showNotification('success', 'Setup Complete', 'Your Discord account has been added successfully.');
+          showNotification(
+            'success',
+            'Setup Complete',
+            'Your Discord account has been added successfully.',
+          );
           navigate('/dashboard');
         } else {
           // Use the regular accounts API endpoint
           await api.accounts.create(accountData);
 
-          showNotification('success', 'Account Created', 'Discord account has been created successfully.');
+          showNotification(
+            'success',
+            'Account Created',
+            'Discord account has been created successfully.',
+          );
           navigate('/accounts');
         }
       } else if (mode === 'edit' && id) {
         // Update existing account
         const updates: { name: string; token?: string; isActive: boolean } = {
           name: accountName.trim(),
-          isActive
+          isActive,
         };
 
         // Only include token in update if it was changed (not masked)
@@ -121,7 +133,11 @@ const AccountForm = ({ mode }: AccountFormProps) => {
         // This would be an API call to update the account
         await api.accounts.update(id, updates);
 
-        showNotification('success', 'Account Updated', 'Discord account has been updated successfully.');
+        showNotification(
+          'success',
+          'Account Updated',
+          'Discord account has been updated successfully.',
+        );
         navigate('/accounts');
       }
     } catch (err) {
@@ -142,7 +158,11 @@ const AccountForm = ({ mode }: AccountFormProps) => {
   return (
     <>
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        {isSetupMode ? 'Set Up Your Discord Account' : (mode === 'create' ? 'Add Discord Account' : 'Edit Discord Account')}
+        {isSetupMode
+          ? 'Set Up Your Discord Account'
+          : mode === 'create'
+            ? 'Add Discord Account'
+            : 'Edit Discord Account'}
       </h1>
 
       <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg p-6">
@@ -159,7 +179,10 @@ const AccountForm = ({ mode }: AccountFormProps) => {
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div>
-              <label htmlFor="account-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="account-name"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Account Name
               </label>
               <div className="mt-1">
@@ -169,7 +192,7 @@ const AccountForm = ({ mode }: AccountFormProps) => {
                   type="text"
                   required
                   value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
+                  onChange={e => setAccountName(e.target.value)}
                   placeholder="e.g., My Discord Account"
                   disabled={loading}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
@@ -181,18 +204,23 @@ const AccountForm = ({ mode }: AccountFormProps) => {
             </div>
 
             <div>
-              <label htmlFor="discord-token" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="discord-token"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Discord Token
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <input
                   id="discord-token"
                   name="discord-token"
-                  type={showToken ? "text" : "password"}
+                  type={showToken ? 'text' : 'password'}
                   required={mode === 'create'}
                   value={discordToken}
-                  onChange={(e) => setDiscordToken(e.target.value)}
-                  placeholder={mode === 'edit' ? "Leave blank to keep current token" : "Your Discord token"}
+                  onChange={e => setDiscordToken(e.target.value)}
+                  placeholder={
+                    mode === 'edit' ? 'Leave blank to keep current token' : 'Your Discord token'
+                  }
                   disabled={loading}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white pr-12 disabled:opacity-70 disabled:cursor-not-allowed"
                 />
@@ -219,13 +247,16 @@ const AccountForm = ({ mode }: AccountFormProps) => {
                     name="is-active"
                     type="checkbox"
                     checked={isActive}
-                    onChange={(e) => setIsActive(e.target.checked)}
+                    onChange={e => setIsActive(e.target.checked)}
                     disabled={loading}
                     className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
                   />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label htmlFor="is-active" className="font-medium text-gray-700 dark:text-gray-300">
+                  <label
+                    htmlFor="is-active"
+                    className="font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Active
                   </label>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -241,11 +272,15 @@ const AccountForm = ({ mode }: AccountFormProps) => {
                   <InformationCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">How to get your Discord token</h3>
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                    How to get your Discord token
+                  </h3>
                   <div className="mt-2 text-sm text-blue-700 dark:text-blue-200">
                     <ol className="list-decimal list-inside space-y-1">
                       <li>Open Discord in your browser or desktop app</li>
-                      <li>Press Ctrl+Shift+I (Windows) or Cmd+Option+I (Mac) to open Developer Tools</li>
+                      <li>
+                        Press Ctrl+Shift+I (Windows) or Cmd+Option+I (Mac) to open Developer Tools
+                      </li>
                       <li>Go to the "Network" tab</li>
                       <li>Type "api" in the filter box</li>
                       <li>Refresh the page</li>
@@ -260,11 +295,13 @@ const AccountForm = ({ mode }: AccountFormProps) => {
 
             {isSetupMode && (
               <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-md border-l-4 border-yellow-500 mt-4">
-                <h4 className="text-yellow-800 dark:text-yellow-300 font-medium">Important Security Warning</h4>
+                <h4 className="text-yellow-800 dark:text-yellow-300 font-medium">
+                  Important Security Warning
+                </h4>
                 <p className="mt-2 text-yellow-700 dark:text-yellow-200 text-sm">
-                  Your Discord token gives full access to your account. Never share it with anyone else or
-                  enter it on any untrusted websites. We securely encrypt your token and only use it for
-                  the specific features you enable.
+                  Your Discord token gives full access to your account. Never share it with anyone
+                  else or enter it on any untrusted websites. We securely encrypt your token and
+                  only use it for the specific features you enable.
                 </p>
               </div>
             )}
@@ -272,7 +309,7 @@ const AccountForm = ({ mode }: AccountFormProps) => {
             <div className="flex justify-end space-x-3 pt-6">
               <button
                 type="button"
-                onClick={() => isSetupMode ? navigate(-1) : navigate('/accounts')}
+                onClick={() => (isSetupMode ? navigate(-1) : navigate('/accounts'))}
                 disabled={loading}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -284,8 +321,16 @@ const AccountForm = ({ mode }: AccountFormProps) => {
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading
-                  ? (isSetupMode ? 'Setting Up...' : (mode === 'create' ? 'Creating...' : 'Updating...'))
-                  : (isSetupMode ? 'Continue' : (mode === 'create' ? 'Create Account' : 'Update Account'))}
+                  ? isSetupMode
+                    ? 'Setting Up...'
+                    : mode === 'create'
+                      ? 'Creating...'
+                      : 'Updating...'
+                  : isSetupMode
+                    ? 'Continue'
+                    : mode === 'create'
+                      ? 'Create Account'
+                      : 'Update Account'}
               </button>
             </div>
           </div>
@@ -295,4 +340,4 @@ const AccountForm = ({ mode }: AccountFormProps) => {
   );
 };
 
-export default AccountForm; 
+export default AccountForm;

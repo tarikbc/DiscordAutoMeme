@@ -92,9 +92,7 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Content Preview
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Content Preview</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
@@ -104,12 +102,12 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
         </div>
 
         <div className="p-4 overflow-y-auto flex-grow">
-          <div className="mb-4">
-            {renderContentPreview()}
-          </div>
+          <div className="mb-4">{renderContentPreview()}</div>
 
           <div className="mt-4">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Content Details</h4>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Content Details
+            </h4>
             <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <div className="sm:col-span-1">
                 <dt className="text-xs text-gray-500 dark:text-gray-400">Title</dt>
@@ -126,7 +124,12 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
               <div className="sm:col-span-1">
                 <dt className="text-xs text-gray-500 dark:text-gray-400">URL</dt>
                 <dd className="mt-1 text-sm text-gray-900 dark:text-white truncate">
-                  <a href={content.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <a
+                    href={content.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
                     {content.url}
                   </a>
                 </dd>
@@ -136,19 +139,24 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
 
           {friends.length > 0 && (
             <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-              <label htmlFor="friend-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="friend-select"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Send to Friend:
               </label>
               <div className="mt-2 flex">
                 <select
                   id="friend-select"
                   value={selectedFriend}
-                  onChange={(e) => setSelectedFriend(e.target.value)}
+                  onChange={e => setSelectedFriend(e.target.value)}
                   className="flex-grow rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
                 >
                   <option value="">Select a friend</option>
                   {friends.map(friend => (
-                    <option key={friend.id} value={friend.id}>{friend.name}</option>
+                    <option key={friend.id} value={friend.id}>
+                      {friend.name}
+                    </option>
                   ))}
                 </select>
                 <button
@@ -159,16 +167,41 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
                 >
                   {isSending ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Sending...
                     </span>
                   ) : sendSuccess ? (
                     <span className="flex items-center">
-                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        ></path>
                       </svg>
                       Sent!
                     </span>
@@ -191,4 +224,4 @@ const ContentPreview = ({ content, onSend, onClose, friends = [] }: ContentPrevi
   );
 };
 
-export default ContentPreview; 
+export default ContentPreview;
